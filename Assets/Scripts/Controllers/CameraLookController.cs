@@ -1,4 +1,5 @@
 ﻿using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 
 public class CameraLookController : MonoBehaviour
@@ -10,9 +11,8 @@ public class CameraLookController : MonoBehaviour
     {
         var sensitivityObservable = Observable.Return(Sensitivity);
         var smoothingObservable = Observable.Return(Smoothing);
-        var playerObservable = Observable.Return(GameObject.FindGameObjectWithTag("Player"));
-        var inputObservables = Toolbox.Instance.GetComponent<InputObservables>();
-        var mouseXYObservable = inputObservables.MouseXYObservable;
+        var characterControllerObservable = Observable.Return(GetComponentInParent<CharacterController>());
+        var mouseXYObservable = InputObservables.GetMouseXyObservable(this.UpdateAsObservable());
         var mouseDeltaObservable = Observable.CombineLatest(
             sensitivityObservable,
             smoothingObservable,
@@ -42,13 +42,14 @@ public class CameraLookController : MonoBehaviour
         );
 
         Observable.CombineLatest(
-                playerObservable.Select(player => player.transform.up),
+                characterControllerObservable.Select(characterController => characterController.transform.up),
                 clampedMouseLookObservable.Select(mouseLook => mouseLook.x),
-                (playerTransformUp, mouseLookX) =>
-                    Quaternion.AngleAxis(mouseLookX, playerTransformUp)
+                (up, mouseLookX) =>
+                    Quaternion.AngleAxis(mouseLookX, up)
             )
-            .CombineLatest(playerObservable, (localRotation, player) => new {localRotation, player})
-            .Subscribe(o => o.player.transform.localRotation = o.localRotation);
+            .CombineLatest(characterControllerObservable,
+                (localRotation, characterController) => new {localRotation, characterController})
+            .Subscribe(o => o.characterController.transform.localRotation = o.localRotation);
 
         clampedMouseLookObservable.Select(clampedMouseLook => Quaternion.AngleAxis(-clampedMouseLook.y, Vector3.right))
             .Subscribe(localRotation => transform.localRotation = localRotation);

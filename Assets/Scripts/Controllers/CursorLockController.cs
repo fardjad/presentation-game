@@ -6,8 +6,7 @@ public class CursorLockController : MonoBehaviour
 {
     private void Start()
     {
-        var inputObservable = Toolbox.Instance.GetComponent<InputObservables>();
-        var escapeObservable = inputObservable.EscapeObservable;
+        var escapeObservable = InputObservables.GetKeyDownObservable(this.UpdateAsObservable(), KeyCode.Escape);
 
         gameObject.UpdateAsObservable()
             .Select(_ => CursorLockMode.Locked)

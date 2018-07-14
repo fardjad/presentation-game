@@ -1,4 +1,5 @@
 ﻿using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 
 public class FirstPersonController : MonoBehaviour
@@ -9,10 +10,10 @@ public class FirstPersonController : MonoBehaviour
     {
         setParentConstraints();
 
+        var characterControllerObservable = Observable.Return(GetComponent<CharacterController>());
         var animatorObservable = Observable.Return(GetComponentInChildren<Animator>());
         var speedObservable = Observable.Return(Speed);
-        var inputObservables = Toolbox.Instance.GetComponent<InputObservables>();
-        var hwObservable = inputObservables.HwObservable;
+        var hwObservable = InputObservables.GetHwObservable(this.UpdateAsObservable());
         var animatorParamsObservable = hwObservable.Select(hw => new
         {
             isWalking = hw.Vertical != 0,
@@ -25,23 +26,33 @@ public class FirstPersonController : MonoBehaviour
         Observable.CombineLatest(
                 animatorObservable,
                 animatorParamsObservable,
-                (animator, animatorParams) => new {animator, animatorParams}
+                characterControllerObservable,
+                (animator, animatorParams, characterController) => new {animator, animatorParams, characterController}
             )
             .Subscribe(o =>
             {
-                o.animator.SetBool("IsWalking", o.animatorParams.isWalking);
+                // TODO: Calculate the threshold in a more theoretically justifiable manner
+                var isStuck = o.characterController.velocity.magnitude < 0.1;
+
+                o.animator.SetBool("IsWalking", !isStuck && o.animatorParams.isWalking);
                 o.animator.SetFloat("Walk", o.animatorParams.walk);
-                o.animator.SetBool("IsStrafing", o.animatorParams.isOnlyStrafing);
+                o.animator.SetBool("IsStrafing", !isStuck && o.animatorParams.isOnlyStrafing);
                 o.animator.SetFloat("Strafe", o.animatorParams.strafe);
             });
 
         Observable.CombineLatest(
                 speedObservable,
                 animatorParamsObservable,
-                (speed, animatorParams) =>
-                    new Vector3(animatorParams.strafe, 0, animatorParams.walk) * speed * Time.deltaTime)
-            .Subscribe(vector =>
-                transform.Translate(vector));
+                characterControllerObservable,
+                (speed, animatorParams, characterController) => new
+                {
+                    speedSide = animatorParams.strafe * speed,
+                    speedForward = animatorParams.walk * speed,
+                    characterController
+                })
+            .Subscribe(o =>
+                o.characterController.SimpleMove(transform.forward * o.speedForward +
+                                                 transform.right * o.speedSide));
     }
 
     private void setParentConstraints()

@@ -9,11 +9,11 @@ public class HeadBobbingController : MonoBehaviour
 
     private void Start()
     {
-        var inputObservable = Toolbox.Instance.GetComponent<InputObservables>();
         var initialLocalPositionObservable = Observable.Return(transform.localPosition);
 
         var isStillObservable =
-            inputObservable.HwObservable.Select(hw => hw.Horizontal == 0 && hw.Vertical == 0);
+            InputObservables.GetHwObservable(this.UpdateAsObservable())
+                .Select(hw => hw.Horizontal == 0 && hw.Vertical == 0);
 
         var sineWaveObservable = this.UpdateAsObservable()
             .Select(_ => BobbingSpeed)
@@ -36,7 +36,7 @@ public class HeadBobbingController : MonoBehaviour
 
         var translateChangeObservable = sineWaveObservable.Select(value => value * BobbingAmount);
 
-        var clampedSumOfAxesObservable = inputObservable.HwObservable
+        var clampedSumOfAxesObservable = InputObservables.GetHwObservable(this.UpdateAsObservable())
             .Select(hw => Mathf.Abs(hw.Horizontal) + Mathf.Abs(hw.Vertical))
             .Select(sumOfAxes => Mathf.Clamp(sumOfAxes, 0f, 1f));
 

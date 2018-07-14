@@ -10,7 +10,7 @@ public class Toolbox : Singleton<Toolbox>
 
     private void Awake()
     {
-        RegisterComponent<InputObservables>();
+        // TODO: Register Items
     }
 
     private static T RegisterComponent<T>() where T : Component
