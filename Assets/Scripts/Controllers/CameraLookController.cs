@@ -25,25 +25,30 @@ public class CameraLookController : MonoBehaviour
             smoothingObservable,
             (mouseDelta, smoothing) => new {mouseDelta, smoothing}
         );
-        var smoothMouseDeltaObservable = mouseDeltaAndSmoothingObservable.Scan((acc, mouseDeltaAndSmoothing) => new
+        var smoothMouseDeltaObservable = mouseDeltaAndSmoothingObservable.Scan((acc, mouseDeltaAndSmoothing) =>
             {
-                mouseDelta = new Vector3(
-                    Mathf.Lerp(acc.mouseDelta.x, mouseDeltaAndSmoothing.mouseDelta.x,
-                        1f / mouseDeltaAndSmoothing.smoothing),
-                    Mathf.Lerp(acc.mouseDelta.y, mouseDeltaAndSmoothing.mouseDelta.y,
-                        1f / mouseDeltaAndSmoothing.smoothing)
-                ),
-                mouseDeltaAndSmoothing.smoothing
+                var deltaX = Mathf.Lerp(acc.mouseDelta.x, mouseDeltaAndSmoothing.mouseDelta.x,
+                    1f / mouseDeltaAndSmoothing.smoothing);
+
+                var deltaY = Mathf.Lerp(acc.mouseDelta.y, mouseDeltaAndSmoothing.mouseDelta.y,
+                    1f / mouseDeltaAndSmoothing.smoothing);
+
+                return new
+                {
+                    mouseDelta = new Vector3(deltaX, deltaY),
+                    mouseDeltaAndSmoothing.smoothing
+                };
             })
             .Select(o => o.mouseDelta);
-        var mouseLookObservable = smoothMouseDeltaObservable.Scan((acc, smoothMouseDelta) => acc + smoothMouseDelta);
-        var clampedMouseLookObservable = mouseLookObservable.Select(mouseLook =>
-            new Vector3(mouseLook.x, Mathf.Clamp(mouseLook.y, -50 /* down */, 70 /* up */))
-        );
+        var mouseLookObservable = smoothMouseDeltaObservable.Scan((acc, smoothMouseDelta) =>
+        {
+            var result = acc + smoothMouseDelta;
+            return new Vector3(result.x, Mathf.Clamp(result.y, -50 /* down */, 70 /* up */));
+        });
 
         Observable.CombineLatest(
                 characterControllerObservable.Select(characterController => characterController.transform.up),
-                clampedMouseLookObservable.Select(mouseLook => mouseLook.x),
+                mouseLookObservable.Select(mouseLook => mouseLook.x),
                 (up, mouseLookX) =>
                     Quaternion.AngleAxis(mouseLookX, up)
             )
@@ -51,7 +56,7 @@ public class CameraLookController : MonoBehaviour
                 (localRotation, characterController) => new {localRotation, characterController})
             .Subscribe(o => o.characterController.transform.localRotation = o.localRotation);
 
-        clampedMouseLookObservable.Select(clampedMouseLook => Quaternion.AngleAxis(-clampedMouseLook.y, Vector3.right))
+        mouseLookObservable.Select(mouseLook => Quaternion.AngleAxis(-mouseLook.y, Vector3.right))
             .Subscribe(localRotation => transform.localRotation = localRotation);
     }
 }
