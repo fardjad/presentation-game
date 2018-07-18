@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using System;
+using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 
@@ -16,7 +17,8 @@ public class HeadBobbingController : MonoBehaviour
                 .Select(hw => hw.Horizontal == 0 && hw.Vertical == 0);
 
         var sineWaveObservable = this.UpdateAsObservable()
-            .Select(_ => BobbingSpeed)
+            .TimeInterval()
+            .Select(ti => BobbingSpeed * (float) ti.Interval.TotalSeconds)
             .Scan((acc, value) =>
             {
                 if (acc + value > 2 * Mathf.PI)
