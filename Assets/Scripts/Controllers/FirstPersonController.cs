@@ -1,68 +1,70 @@
 ﻿using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using Utils.Input;
 
-public class FirstPersonController : MonoBehaviour
+namespace Controllers
 {
-    public float Speed = 0.5f;
-
-    private void Start()
+    public class FirstPersonController : MonoBehaviour
     {
-        setParentConstraints();
+        [SerializeField] public float Speed = 0.5f;
 
-        var characterControllerObservable = Observable.Return(GetComponent<CharacterController>());
-        var animatorObservable = Observable.Return(GetComponentInChildren<Animator>());
-        var speedObservable = Observable.Return(Speed);
-        var hwObservable = InputObservables.GetHwObservable(this.UpdateAsObservable());
-        var animatorParamsObservable = hwObservable.Select(hw => new
+        private void Start()
         {
-            isWalking = hw.Vertical != 0,
-            walk = hw.Vertical,
-            isStrafing = hw.Horizontal != 0,
-            isOnlyStrafing = hw.Vertical == 0 && hw.Horizontal != 0,
-            strafe = hw.Horizontal
-        });
+            setParentConstraints();
 
-        Observable.CombineLatest(
-                animatorObservable,
-                animatorParamsObservable,
-                characterControllerObservable,
-                (animator, animatorParams, characterController) => new {animator, animatorParams, characterController}
-            )
-            .Subscribe(o =>
-            {
-                // TODO: Calculate the threshold in a more theoretically justifiable manner
-                var isStuck = o.characterController.velocity.magnitude < 0.1;
+            var characterControllerObservable = Observable.Return(GetComponent<CharacterController>());
+            var animatorObservable = Observable.Return(GetComponentInChildren<Animator>());
+            var speedObservable = this.UpdateAsObservable().Select(_ => Speed).Distinct();
+            var hwObservable = InputObservables.GetHwObservable(this.UpdateAsObservable());
+            var transformObservable = this.UpdateAsObservable().Select(_ => transform);
 
-                o.animator.SetBool("IsWalking", !isStuck && o.animatorParams.isWalking);
-                o.animator.SetFloat("Walk", o.animatorParams.walk);
-                o.animator.SetBool("IsStrafing", !isStuck && o.animatorParams.isOnlyStrafing);
-                o.animator.SetFloat("Strafe", o.animatorParams.strafe);
-            });
-
-        Observable.CombineLatest(
-                speedObservable,
-                animatorParamsObservable,
-                characterControllerObservable,
-                (speed, animatorParams, characterController) => new
+            Observable.CombineLatest(
+                    characterControllerObservable,
+                    speedObservable,
+                    hwObservable,
+                    transformObservable,
+                    (characterController, speed, hw, transform) => new
+                    {
+                        characterController,
+                        speed,
+                        hw,
+                        transform
+                    })
+                .Subscribe(o =>
                 {
-                    speedSide = animatorParams.strafe * speed,
-                    speedForward = animatorParams.walk * speed,
-                    characterController
-                })
-            .Subscribe(o =>
-                o.characterController.SimpleMove(transform.forward * o.speedForward +
-                                                 transform.right * o.speedSide));
-    }
+                    o.characterController.SimpleMove(o.transform.forward * o.hw.Vertical * o.speed +
+                                                     o.transform.right * o.hw.Horizontal * o.speed);
+                });
 
-    private void setParentConstraints()
-    {
-        var parentRigidBodyObservable = Observable.Return(gameObject.GetComponentInParent<Rigidbody>());
-        parentRigidBodyObservable.SkipWhile(parentRigidBody => parentRigidBody == null)
-            .Subscribe(parentRigidBody =>
-            {
-                parentRigidBody.constraints =
-                    RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationZ;
-            });
+            Observable.CombineLatest(
+                    animatorObservable,
+                    speedObservable,
+                    hwObservable,
+                    (animator, speed, hw) => new
+                    {
+                        animator,
+                        speed,
+                        hw
+                    })
+                .Subscribe(o =>
+                {
+                    o.animator.SetFloat("Horizontal", o.hw.Horizontal, 0.1f, Time.deltaTime);
+                    o.animator.SetFloat("Vertical", o.hw.Vertical, 0.1f, Time.deltaTime);
+                    o.animator.speed =
+                        o.speed * 2f; // if chacarcter movement speed is 0.5, then animation must play at full speed
+                });
+        }
+
+        private void setParentConstraints()
+        {
+            var parentRigidBodyObservable = Observable.Return(gameObject.GetComponentInParent<Rigidbody>());
+            parentRigidBodyObservable.SkipWhile(parentRigidBody => parentRigidBody == null)
+                .Subscribe(parentRigidBody =>
+                {
+                    parentRigidBody.constraints =
+                        RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationZ;
+                });
+        }
     }
 }

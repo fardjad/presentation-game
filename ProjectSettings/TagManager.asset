@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -14,14 +15,14 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - Hidden
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Temporary
+  - Characters
+  - Lights
+  - Class
+  - Class_Ceiling
+  - Chairs
+  - Navigation
+  - Spawner
   - 
   - 
   - 
