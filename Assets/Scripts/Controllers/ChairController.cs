@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using JetBrains.Annotations;
 using UnityEngine;
+using Zenject;
 
-public class ChairController : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+namespace Controllers
+{
+    public class ChairController : MonoBehaviour
+    {
+        [UsedImplicitly]
+        public class Factory : PlaceholderFactory<ChairController>
+        {
+        }
+    }
 }

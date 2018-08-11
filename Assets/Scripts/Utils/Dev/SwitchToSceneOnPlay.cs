@@ -8,7 +8,7 @@ namespace Utils.Dev
         private void Start()
         {
 #if UNITY_EDITOR
-            SceneView.FocusWindowIfItsOpen(typeof(SceneView));
+            EditorWindow.FocusWindowIfItsOpen(typeof(SceneView));
 #endif
         }
     }

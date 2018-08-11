@@ -1,94 +1,74 @@
-﻿using UnityEngine;
-using Utils.Dev;
-using Utils.Vector;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
+using UniRx;
+using UnityEngine;
+using Utils;
+using Zenject;
 
 namespace Controllers
 {
     public class ChairSpawnController : MonoBehaviour
     {
-        [SerializeField] [ReadOnlyWhenPlaying] public GameObject Prefab;
+        private ChairController.Factory _chairControllerFactory;
+        private ChairManager _chairManager;
+        private Settings _settings;
 
-        [SerializeField] [ReadOnlyWhenPlaying] public int CountZ = 3;
-        [SerializeField] [ReadOnlyWhenPlaying] public int CountX = 3;
-        private Renderer _renderer;
+        [Inject]
+        [UsedImplicitly]
+        public void Construct(
+            ChairController.Factory factory,
+            ChairManager manager,
+            Settings settings
+        )
+        {
+            _chairControllerFactory = factory;
+            _chairManager = manager;
+            _settings = settings;
+        }
 
         private void Start()
         {
-            if (Prefab == null)
-            {
-                Debug.LogError("Prefab is null");
-                return;
-            }
+            var gameObjectRenderer = GetComponent<Renderer>();
 
-            _renderer = GetComponent<Renderer>();
+            var countX = _settings.CountX;
+            var countZ = _settings.CountZ;
 
-            var chairs = new GameObject[CountX, CountZ];
-            for (var iz = 0; iz < CountX; iz++)
-            {
-                for (var ix = 0; ix < CountZ; ix++)
+            Observable.Range(0, countX)
+                .SelectMany(ix => Observable.Range(0, countZ)
+                    .Select(iz => new
+                    {
+                        Ix = ix,
+                        Iz = iz,
+                        Position = new Vector3(
+                            gameObjectRenderer.bounds.min.x + ix * gameObjectRenderer.bounds.size.x / (countX - 1),
+                            0,
+                            gameObjectRenderer.bounds.min.z + iz * gameObjectRenderer.bounds.size.z / (countZ - 1)
+                        ),
+                        Name = string.Format("Chair[{0},{1}]", ix.ToString(), iz.ToString())
+                    }))
+                .Subscribe(data =>
                 {
-                    var x = _renderer.bounds.min.x + ix * _renderer.bounds.size.x / (CountZ - 1);
-                    var z = _renderer.bounds.min.z + iz * _renderer.bounds.size.z / (CountX - 1);
-                    Debug.DrawRay(new Vector3(x, 0, z), Vector3.up, Color.green);
-                    chairs[iz, ix] = Instantiate(Prefab, new Vector3(x, 0, z), Quaternion.Euler(0, 90, 0));
-                }
-            }
+                    var chairController = _chairControllerFactory.Create();
+                    chairController.gameObject.transform.position = data.Position;
+                    chairController.gameObject.name = data.Name;
+                    _chairManager.RegisterChairController(data.Ix, data.Iz, chairController);
+                });
         }
 
-        private void Update()
+        [Serializable]
+        public class RowCol
         {
-            Debug.DrawLine(
-                _renderer.bounds.min,
-                VectorBuilder.FromVector(_renderer.bounds.min).SetX(_renderer.bounds.max.x).ToVector(),
-                Color.red,
-                Time.deltaTime
-            ); // bottom
+            [SerializeField] [UsedImplicitly] public int Row;
+            [SerializeField] [UsedImplicitly] public int Col;
+        }
 
-            Debug.DrawLine(
-                VectorBuilder.FromVector(_renderer.bounds.min)
-                    .SetZ(_renderer.bounds.max.z)
-                    .ToVector(),
-                VectorBuilder.FromVector(_renderer.bounds.min)
-                    .SetX(_renderer.bounds.max.x)
-                    .SetZ(_renderer.bounds.max.z)
-                    .ToVector(),
-                Color.red,
-                Time.deltaTime
-            ); // top
-            Debug.DrawLine(
-                _renderer.bounds.min,
-                VectorBuilder.FromVector(_renderer.bounds.min).SetZ(_renderer.bounds.max.z).ToVector(),
-                Color.blue,
-                Time.deltaTime
-            ); // left
-
-            Debug.DrawLine(
-                _renderer.bounds.min,
-                VectorBuilder.FromVector(_renderer.bounds.min).SetZ(_renderer.bounds.max.z).ToVector(),
-                Color.blue,
-                Time.deltaTime
-            ); // left
-            Debug.DrawLine(
-                VectorBuilder.FromVector(_renderer.bounds.min)
-                    .SetX(_renderer.bounds.max.x)
-                    .ToVector(),
-                VectorBuilder.FromVector(_renderer.bounds.min)
-                    .SetX(_renderer.bounds.max.x)
-                    .SetZ(_renderer.bounds.max.z)
-                    .ToVector(),
-                Color.blue,
-                Time.deltaTime
-            ); // right
-
-            Debug.DrawLine(
-                _renderer.bounds.min,
-                VectorBuilder.FromVector(_renderer.bounds.min)
-                    .SetX(_renderer.bounds.max.x)
-                    .SetZ(_renderer.bounds.max.z)
-                    .ToVector(),
-                Color.magenta,
-                Time.deltaTime
-            ); // Diagonal
+        [Serializable]
+        public class Settings
+        {
+            [SerializeField] [UsedImplicitly] public int CountX = 3;
+            [SerializeField] [UsedImplicitly] public int CountZ = 3;
+            [SerializeField] [UsedImplicitly] public List<RowCol> DisabledChairs;
         }
     }
 }

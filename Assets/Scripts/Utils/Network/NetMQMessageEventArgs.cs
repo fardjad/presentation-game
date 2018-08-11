@@ -3,13 +3,13 @@ using NetMQ;
 
 namespace Utils.Network
 {
-    public class NetMQMessageEventArgs : EventArgs
+    public class NetMqMessageEventArgs : EventArgs
     {
-        public NetMQMessageEventArgs(NetMQMessage message)
+        public NetMqMessageEventArgs(NetMQMessage message)
         {
             Message = message;
         }
 
-        public NetMQMessage Message { get; set; }
+        public NetMQMessage Message { get; private set; }
     }
 }

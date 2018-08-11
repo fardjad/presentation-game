@@ -1,24 +1,37 @@
-﻿using UniRx;
+﻿using System;
+using JetBrains.Annotations;
+using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Utils.Input;
+using Zenject;
 
 namespace Controllers
 {
     public class HeadBobbingController : MonoBehaviour
     {
-        [SerializeField]
-        public float BobbingSpeed = 0.18f;
-        [SerializeField]
-        public float BobbingAmount = 0.2f;
+        private const float Tolerance = 10e-5f;
+
+        [SerializeField] public float BobbingSpeed = 0.18f;
+        [SerializeField] public float BobbingAmount = 0.2f;
+
+        private InputObservableHelper _inputObservableHelper;
+
+
+        [Inject]
+        [UsedImplicitly]
+        public void Construct(UpdateInputObservableHelper inputObservableHelper)
+        {
+            _inputObservableHelper = inputObservableHelper;
+        }
 
         private void Start()
         {
             var initialLocalPositionObservable = Observable.Return(transform.localPosition);
 
-            var isStillObservable =
-                InputObservables.GetHwObservable(this.UpdateAsObservable())
-                    .Select(hw => hw.Horizontal == 0 && hw.Vertical == 0);
+            var isStandingStillObservable =
+                _inputObservableHelper.GetHwObservable()
+                    .Select(hw => Math.Abs(hw.Horizontal) < Tolerance && Math.Abs(hw.Vertical) < Tolerance);
 
             var sineWaveObservable = this.UpdateAsObservable()
                 .TimeInterval()
@@ -32,17 +45,17 @@ namespace Controllers
 
                     return acc + value;
                 })
-                .CombineLatest(isStillObservable, (timer, isStill) => isStill ? 0 : timer)
+                .CombineLatest(isStandingStillObservable, (timer, isStill) => isStill ? 0 : timer)
                 .Select(Mathf.Sin)
                 .Select(value => value * BobbingAmount);
 
             initialLocalPositionObservable
-                .Sample(sineWaveObservable.Where(value => value == 0))
+                .Sample(sineWaveObservable.Where(value => Math.Abs(value) < Tolerance))
                 .Subscribe(initialLocalPosition => transform.localPosition = initialLocalPosition);
 
             var translateChangeObservable = sineWaveObservable.Select(value => value * BobbingAmount);
 
-            var clampedSumOfAxesObservable = InputObservables.GetHwObservable(this.UpdateAsObservable())
+            var clampedSumOfAxesObservable = _inputObservableHelper.GetHwObservable()
                 .Select(hw => Mathf.Abs(hw.Horizontal) + Mathf.Abs(hw.Vertical))
                 .Select(sumOfAxes => Mathf.Clamp(sumOfAxes, 0f, 1f));
 

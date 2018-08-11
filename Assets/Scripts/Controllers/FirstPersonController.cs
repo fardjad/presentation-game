@@ -1,7 +1,9 @@
-﻿using UniRx;
+﻿using JetBrains.Annotations;
+using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Utils.Input;
+using Zenject;
 
 namespace Controllers
 {
@@ -9,61 +11,50 @@ namespace Controllers
     {
         [SerializeField] public float Speed = 0.5f;
 
+        private InputObservableHelper _inputObservableHelper;
+
+        [Inject]
+        [UsedImplicitly]
+        public void Construct(UpdateInputObservableHelper inputObservableHelper)
+        {
+            _inputObservableHelper = inputObservableHelper;
+        }
+
         private void Start()
         {
-            setParentConstraints();
+            var speedObservable = this.UpdateAsObservable().Select(_ => Speed).DistinctUntilChanged();
+            var hwObservable = _inputObservableHelper.GetHwObservable();
 
-            var characterControllerObservable = Observable.Return(GetComponent<CharacterController>());
-            var animatorObservable = Observable.Return(GetComponentInChildren<Animator>());
-            var speedObservable = this.UpdateAsObservable().Select(_ => Speed).Distinct();
-            var hwObservable = InputObservables.GetHwObservable(this.UpdateAsObservable());
-            var transformObservable = this.UpdateAsObservable().Select(_ => transform);
-
+            var characterController = GetComponentInChildren<CharacterController>();
             Observable.CombineLatest(
-                    characterControllerObservable,
                     speedObservable,
                     hwObservable,
-                    transformObservable,
-                    (characterController, speed, hw, transform) => new
+                    (speed, hw) => new
                     {
-                        characterController,
-                        speed,
-                        hw,
-                        transform
-                    })
-                .Subscribe(o =>
-                {
-                    o.characterController.SimpleMove(o.transform.forward * o.hw.Vertical * o.speed +
-                                                     o.transform.right * o.hw.Horizontal * o.speed);
-                });
-
-            Observable.CombineLatest(
-                    animatorObservable,
-                    speedObservable,
-                    hwObservable,
-                    (animator, speed, hw) => new
-                    {
-                        animator,
                         speed,
                         hw
                     })
                 .Subscribe(o =>
                 {
-                    o.animator.SetFloat("Horizontal", o.hw.Horizontal, 0.1f, Time.deltaTime);
-                    o.animator.SetFloat("Vertical", o.hw.Vertical, 0.1f, Time.deltaTime);
-                    o.animator.speed =
-                        o.speed * 2f; // if chacarcter movement speed is 0.5, then animation must play at full speed
+                    characterController.SimpleMove(transform.forward * o.hw.Vertical * o.speed +
+                                                   transform.right * o.hw.Horizontal * o.speed);
                 });
-        }
 
-        private void setParentConstraints()
-        {
-            var parentRigidBodyObservable = Observable.Return(gameObject.GetComponentInParent<Rigidbody>());
-            parentRigidBodyObservable.SkipWhile(parentRigidBody => parentRigidBody == null)
-                .Subscribe(parentRigidBody =>
+            var animator = GetComponentInChildren<Animator>();
+            Observable.CombineLatest(
+                    speedObservable,
+                    hwObservable,
+                    (speed, hw) => new
+                    {
+                        speed,
+                        hw
+                    })
+                .Subscribe(o =>
                 {
-                    parentRigidBody.constraints =
-                        RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationZ;
+                    animator.SetFloat("Horizontal", o.hw.Horizontal, 0.1f, Time.deltaTime);
+                    animator.SetFloat("Vertical", o.hw.Vertical, 0.1f, Time.deltaTime);
+                    animator.speed =
+                        o.speed * 2f; // if character movement speed is 0.5, then animation must play at full speed
                 });
         }
     }

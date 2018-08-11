@@ -1,7 +1,9 @@
-﻿using UniRx;
+﻿using JetBrains.Annotations;
+using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Utils.Input;
+using Zenject;
 
 namespace Controllers
 {
@@ -10,18 +12,27 @@ namespace Controllers
         [SerializeField] public float Sensitivity = 2f;
         [SerializeField] public float Smoothing = 2f;
 
+        private InputObservableHelper _inputObservableHelper;
+
+        [Inject]
+        [UsedImplicitly]
+        public void Construct(UpdateInputObservableHelper inputObservableHelper)
+        {
+            _inputObservableHelper = inputObservableHelper;
+        }
+
         private void Start()
         {
-            var sensitivityObservable = this.UpdateAsObservable().Select(_ => Sensitivity).Distinct();
-            var smoothingObservable = this.UpdateAsObservable().Select(_ => Smoothing).Distinct();
+            var sensitivityObservable = this.UpdateAsObservable().Select(_ => Sensitivity).DistinctUntilChanged();
+            var smoothingObservable = this.UpdateAsObservable().Select(_ => Smoothing).DistinctUntilChanged();
             var characterControllerObservable = Observable.Return(GetComponentInParent<CharacterController>());
-            var mouseXYObservable = InputObservables.GetMouseXyObservable(this.UpdateAsObservable());
+            var mouseXyObservable = _inputObservableHelper.GetMouseXyObservable();
             var mouseDeltaObservable = Observable.CombineLatest(
                 sensitivityObservable,
                 smoothingObservable,
-                mouseXYObservable,
-                (sensitivity, smoothing, mouseXY) =>
-                    new Vector3(mouseXY.MouseX, mouseXY.MouseY) * sensitivity * smoothing
+                mouseXyObservable,
+                (sensitivity, smoothing, mouseXy) =>
+                    new Vector3(mouseXy.MouseX, mouseXy.MouseY) * sensitivity * smoothing
             );
             var mouseDeltaAndSmoothingObservable = Observable.CombineLatest(
                 mouseDeltaObservable,
