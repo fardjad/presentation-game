@@ -9,9 +9,8 @@ namespace Controllers
 {
     public class FirstPersonController : MonoBehaviour
     {
-        [SerializeField] public float Speed = 0.5f;
-
         private InputObservableHelper _inputObservableHelper;
+        [SerializeField] public float Speed = 0.5f;
 
         [Inject]
         [UsedImplicitly]

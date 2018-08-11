@@ -12,12 +12,11 @@ namespace Utils.Network
     [UsedImplicitly]
     public class ZmqIpcHelper
     {
-        private event EventHandler<NetMqMessageEventArgs> InternalOnMessage;
-        private readonly List<EventHandler<NetMqMessageEventArgs>> _onMessageEventHandlers;
-        private readonly DealerSocket _sock;
         private readonly Queue _messages;
+        private readonly List<EventHandler<NetMqMessageEventArgs>> _onMessageEventHandlers;
         private readonly NetMQPoller _poller;
         private readonly object _pollerAndMqThreadMutex;
+        private readonly DealerSocket _sock;
         private bool _disposing;
 
         private ZmqIpcHelper(ISocketConfig config)
@@ -59,14 +58,13 @@ namespace Utils.Network
                     message = _sock.ReceiveMultipartMessage();
                 }
 
-                if (InternalOnMessage != null)
-                {
-                    InternalOnMessage.Invoke(this, new NetMqMessageEventArgs(message));
-                }
+                if (InternalOnMessage != null) InternalOnMessage.Invoke(this, new NetMqMessageEventArgs(message));
             };
 
             _poller = new NetMQPoller {_sock};
         }
+
+        private event EventHandler<NetMqMessageEventArgs> InternalOnMessage;
 
         public void Start()
         {
@@ -110,10 +108,7 @@ namespace Utils.Network
                 if (!_disposing) return;
             }
 
-            foreach (var eventHandler in _onMessageEventHandlers)
-            {
-                InternalOnMessage -= eventHandler;
-            }
+            foreach (var eventHandler in _onMessageEventHandlers) InternalOnMessage -= eventHandler;
 
             _onMessageEventHandlers.Clear();
             _messages.Clear();
@@ -125,10 +120,7 @@ namespace Utils.Network
                 _sock.Close();
             }
 
-            if (_poller.IsRunning)
-            {
-                _poller.Stop();
-            }
+            if (_poller.IsRunning) _poller.Stop();
 
             _sock.Dispose();
             _poller.Dispose();

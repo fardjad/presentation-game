@@ -9,10 +9,9 @@ namespace Controllers
 {
     public class CameraLookController : MonoBehaviour
     {
+        private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float Sensitivity = 2f;
         [SerializeField] public float Smoothing = 2f;
-
-        private InputObservableHelper _inputObservableHelper;
 
         [Inject]
         [UsedImplicitly]
@@ -41,10 +40,12 @@ namespace Controllers
             );
             var smoothMouseDeltaObservable = mouseDeltaAndSmoothingObservable.Scan((acc, mouseDeltaAndSmoothing) =>
                 {
-                    var deltaX = Mathf.Lerp(acc.mouseDelta.x, mouseDeltaAndSmoothing.mouseDelta.x,
+                    var deltaX = Mathf.Lerp(acc.mouseDelta.x,
+                        mouseDeltaAndSmoothing.mouseDelta.x,
                         1f / mouseDeltaAndSmoothing.smoothing);
 
-                    var deltaY = Mathf.Lerp(acc.mouseDelta.y, mouseDeltaAndSmoothing.mouseDelta.y,
+                    var deltaY = Mathf.Lerp(acc.mouseDelta.y,
+                        mouseDeltaAndSmoothing.mouseDelta.y,
                         1f / mouseDeltaAndSmoothing.smoothing);
 
                     return new

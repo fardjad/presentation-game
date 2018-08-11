@@ -8,18 +8,6 @@ namespace Utils.Input
     {
         private readonly IObservable<Unit> _updateObservable;
 
-        public struct Hw
-        {
-            public float Horizontal;
-            public float Vertical;
-        }
-
-        public struct MouseXy
-        {
-            public float MouseX;
-            public float MouseY;
-        }
-
         protected InputObservableHelper(IObservable<Unit> updateObservable)
         {
             _updateObservable = updateObservable;
@@ -76,6 +64,18 @@ namespace Utils.Input
                     MouseY = mouseY
                 }
             );
+        }
+
+        public struct Hw
+        {
+            public float Horizontal;
+            public float Vertical;
+        }
+
+        public struct MouseXy
+        {
+            public float MouseX;
+            public float MouseY;
         }
     }
 }

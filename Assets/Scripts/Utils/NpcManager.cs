@@ -11,9 +11,9 @@ namespace Utils
     {
         private readonly ChairManager _chairManager;
         private readonly IDictionary<string, NpcController> _npcControllerDictionary;
+        private int _col;
 
         private int _row;
-        private int _col;
 
         public NpcManager(ChairManager chairManager)
         {
@@ -47,10 +47,7 @@ namespace Utils
                 _row += 1;
             }
 
-            if (_row == 2 && _col == 0)
-            {
-                _col += 1;
-            }
+            if (_row == 2 && _col == 0) _col += 1;
         }
     }
 }

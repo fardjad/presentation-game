@@ -19,33 +19,33 @@ namespace Controllers
     {
         private const float RotationTolerance = 1f;
 
-        [SerializeField] public float MovingTurnSpeed = 360;
-        [SerializeField] public float StationaryTurnSpeed = 180;
-        [SerializeField] public float JumpPower = 12f;
+        private const float KHalf = 0.5f;
+        private Animator _animator;
+        private CapsuleCollider _capsule;
+        private Vector3 _capsuleCenter;
+        private float _capsuleHeight;
+        private bool _crouching;
+        private float _forwardAmount;
+        private Vector3 _groundNormal;
+        private bool _isGrounded;
+        private NavMeshAgent _navMeshAgent;
+        private float _origGroundCheckDistance;
+        private Rigidbody _rigidbody;
+        private IStateMachine _stateMachine;
+        private float _turnAmount;
+        [SerializeField] public List<string> AnimationsStatesWithRootMotion = new List<string>();
+        [SerializeField] public float AnimSpeedMultiplier = 1f;
         [Range(1f, 4f)] [SerializeField] public float GravityMultiplier = 2f;
+        [SerializeField] public float GroundCheckDistance = 0.1f;
+        [SerializeField] public float JumpPower = 12f;
+
+        [SerializeField] public float MoveSpeedMultiplier = 1f;
+
+        [SerializeField] public float MovingTurnSpeed = 360;
 
         //specific to the character in sample assets, will need to be modified to work with others
         [SerializeField] public float RunCycleLegOffset = 0.2f;
-
-        [SerializeField] public float MoveSpeedMultiplier = 1f;
-        [SerializeField] public float AnimSpeedMultiplier = 1f;
-        [SerializeField] public float GroundCheckDistance = 0.1f;
-        [SerializeField] public List<string> AnimationsStatesWithRootMotion = new List<string>();
-
-        private const float KHalf = 0.5f;
-        private Rigidbody _rigidbody;
-        private Animator _animator;
-        private bool _isGrounded;
-        private float _origGroundCheckDistance;
-        private float _turnAmount;
-        private float _forwardAmount;
-        private Vector3 _groundNormal;
-        private float _capsuleHeight;
-        private Vector3 _capsuleCenter;
-        private CapsuleCollider _capsule;
-        private bool _crouching;
-        private NavMeshAgent _navMeshAgent;
-        private IStateMachine _stateMachine;
+        [SerializeField] public float StationaryTurnSpeed = 180;
         public IBlackboard Blackboard { get; private set; }
 
         private void Awake()
@@ -102,13 +102,9 @@ namespace Controllers
 
             // control and velocity handling is different when grounded and airborne:
             if (_isGrounded)
-            {
                 HandleGroundedMovement(crouch, jump);
-            }
             else
-            {
                 HandleAirborneMovement();
-            }
 
             ScaleCapsuleForCrouching(crouch);
             PreventStandingInLowHeadroom();
@@ -126,10 +122,7 @@ namespace Controllers
 
         public bool RotateSmoothly(Quaternion desiredRotation)
         {
-            if (Quaternion.Angle(transform.rotation, desiredRotation) < RotationTolerance)
-            {
-                return false;
-            }
+            if (Quaternion.Angle(transform.rotation, desiredRotation) < RotationTolerance) return false;
 
             transform.rotation =
                 Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * 5f);
@@ -176,9 +169,7 @@ namespace Controllers
                 crouchRayLength,
                 Physics.AllLayers,
                 QueryTriggerInteraction.Ignore))
-            {
                 _crouching = true;
-            }
         }
 
 
@@ -189,10 +180,7 @@ namespace Controllers
             _animator.SetFloat("Turn", _turnAmount, 0.1f, Time.deltaTime);
             _animator.SetBool("Crouch", _crouching);
             _animator.SetBool("OnGround", _isGrounded);
-            if (!_isGrounded)
-            {
-                _animator.SetFloat("Jump", _rigidbody.velocity.y);
-            }
+            if (!_isGrounded) _animator.SetFloat("Jump", _rigidbody.velocity.y);
 
             // calculate which leg is behind, so as to leave that leg trailing in the jump animation
             // (This code is reliant on the specific run cycle offset in our animations,
@@ -202,22 +190,14 @@ namespace Controllers
                     _animator.GetCurrentAnimatorStateInfo(0).normalizedTime + RunCycleLegOffset,
                     1);
             var jumpLeg = (runCycle < KHalf ? 1 : -1) * _forwardAmount;
-            if (_isGrounded)
-            {
-                _animator.SetFloat("JumpLeg", jumpLeg);
-            }
+            if (_isGrounded) _animator.SetFloat("JumpLeg", jumpLeg);
 
             // the anim speed multiplier allows the overall speed of walking/running to be tweaked in the inspector,
             // which affects the movement speed because of the root motion.
             if (_isGrounded && move.magnitude > 0)
-            {
                 _animator.speed = AnimSpeedMultiplier;
-            }
             else
-            {
-                // don't use that while airborne
                 _animator.speed = 1;
-            }
         }
 
 
@@ -312,26 +292,18 @@ namespace Controllers
                     var chairWalkToPosition = (Vector3) Blackboard.Parameters["_chairWalkToPosition"];
                     _navMeshAgent.DrawChosenPath(Color.green);
                     if (_navMeshAgent.MoveTo(chairWalkToPosition, velocity => Move(velocity, false, false)))
-                    {
                         Blackboard.Parameters["FinishedWalkToTheChair"] = "false";
-                    }
                     else
-                    {
                         Blackboard.Parameters["FinishedWalkToTheChair"] = "true";
-                    }
 
                     break;
                 }
                 case "FaceForward":
                 {
                     if (RotateSmoothly(Quaternion.Euler(0f, 90f, 0f)))
-                    {
                         Blackboard.Parameters["FinishedFaceForward"] = "false";
-                    }
                     else
-                    {
                         Blackboard.Parameters["FinishedFaceForward"] = "true";
-                    }
 
                     break;
                 }
@@ -351,13 +323,9 @@ namespace Controllers
                                           .SetY(transform.position.y)
                                           .ToVector() - transform.forward * 0.15f;
                     if (MoveTransform(destination))
-                    {
                         Blackboard.Parameters["FinishedMoveToCenterOfTheChair"] = "false";
-                    }
                     else
-                    {
                         Blackboard.Parameters["FinishedMoveToCenterOfTheChair"] = "true";
-                    }
 
                     break;
                 }
@@ -366,13 +334,9 @@ namespace Controllers
                     var chairStandUpPosition = (Vector3) Blackboard.Parameters["_chairStandUpPosition"];
                     _animator.SetBool("Seated", false);
                     if (MoveTransform(chairStandUpPosition))
-                    {
                         Blackboard.Parameters["FinishStandUp"] = "false";
-                    }
                     else
-                    {
                         Blackboard.Parameters["FinishStandUp"] = "true";
-                    }
 
                     break;
                 }
@@ -398,13 +362,9 @@ namespace Controllers
                     _navMeshAgent.DrawChosenPath(Color.green);
                     if (_navMeshAgent.MoveTo(destination,
                         velocity => Move(velocity, false, false)))
-                    {
                         Blackboard.Parameters["FinishedWalkToDestination"] = "false";
-                    }
                     else
-                    {
                         Blackboard.Parameters["FinishedWalkToDestination"] = "true";
-                    }
 
                     break;
                 }

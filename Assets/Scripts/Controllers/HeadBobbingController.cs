@@ -12,10 +12,10 @@ namespace Controllers
     {
         private const float Tolerance = 10e-5f;
 
-        [SerializeField] public float BobbingSpeed = 0.18f;
+        private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float BobbingAmount = 0.2f;
 
-        private InputObservableHelper _inputObservableHelper;
+        [SerializeField] public float BobbingSpeed = 0.18f;
 
 
         [Inject]
@@ -38,10 +38,7 @@ namespace Controllers
                 .Select(ti => BobbingSpeed * (float) ti.Interval.TotalSeconds)
                 .Scan((acc, value) =>
                 {
-                    if (acc + value > 2 * Mathf.PI)
-                    {
-                        return acc + value - 2 * Mathf.PI;
-                    }
+                    if (acc + value > 2 * Mathf.PI) return acc + value - 2 * Mathf.PI;
 
                     return acc + value;
                 })

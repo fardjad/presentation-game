@@ -1,4 +1,5 @@
 ﻿// ReSharper disable All
+
 using System;
 using System.Collections.Generic;
 using Controllers;
@@ -26,8 +27,6 @@ namespace Utils
 
     internal class NpcState
     {
-        public NpcStateType Type { get; private set; }
-        public bool Pending { get; set; }
         public readonly IDictionary<string, object> Params; // UniRx does not support .NET Framework 4.x
 
         public NpcState(NpcStateType type)
@@ -36,16 +35,20 @@ namespace Utils
             Params = new Dictionary<string, object>();
             Pending = true;
         }
+
+        public NpcStateType Type { get; private set; }
+        public bool Pending { get; set; }
     }
+
     [UsedImplicitly]
     public class OldNpcManager : ITickable, INpcManager
     {
         private readonly ChairManager _chairManager;
         private readonly IDictionary<string, NpcController> _npcControllerDictionary;
         private readonly IDictionary<string, NpcState> _npcStateDictionary;
+        private int _col;
 
         private int _row;
-        private int _col;
 
         public OldNpcManager(ChairManager chairManager)
         {
@@ -66,32 +69,11 @@ namespace Utils
                 _col = 0;
                 _row += 1;
             }
+
             if (_row == 2 && _col == 0)
             {
                 _col += 1;
             }
-        }
-
-        public void MoveTo(string id, Vector3 destination)
-        {
-            var state = new NpcState(NpcStateType.MoveTo);
-            state.Params["destination"] = destination;
-
-            _npcStateDictionary[id] = state;
-        }
-
-        public void SitOnChair(string id, int row, int col)
-        {
-            var state = new NpcState(NpcStateType.SitOnChair);
-            state.Params["row"] = row;
-            state.Params["col"] = col;
-            state.Params["stage"] = SittingOnChairStage.SetDestination;
-
-            _npcStateDictionary[id] = state;
-        }
-
-        public void ResetState(string id)
-        {
         }
 
         public void Tick()
@@ -115,6 +97,28 @@ namespace Utils
                         throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        public void MoveTo(string id, Vector3 destination)
+        {
+            var state = new NpcState(NpcStateType.MoveTo);
+            state.Params["destination"] = destination;
+
+            _npcStateDictionary[id] = state;
+        }
+
+        public void SitOnChair(string id, int row, int col)
+        {
+            var state = new NpcState(NpcStateType.SitOnChair);
+            state.Params["row"] = row;
+            state.Params["col"] = col;
+            state.Params["stage"] = SittingOnChairStage.SetDestination;
+
+            _npcStateDictionary[id] = state;
+        }
+
+        public void ResetState(string id)
+        {
         }
 
         private void MoveToTick(string id, NpcController controller, IDictionary<string, object> stateParams)
@@ -161,8 +165,8 @@ namespace Utils
                 case SittingOnChairStage.MoveToCenterOfTheChair:
                     animator.SetBool("Seated", true);
                     var destination = VectorBuilder.FromVector(_chairManager.GetChairCenter(row, col))
-                                           .SetY(controller.transform.position.y)
-                                           .ToVector() - controller.transform.forward * 0.15f;
+                                          .SetY(controller.transform.position.y)
+                                          .ToVector() - controller.transform.forward * 0.15f;
                     if (!controller.MoveTransform(destination))
                     {
                         _npcStateDictionary[id].Pending = false;

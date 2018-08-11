@@ -7,8 +7,8 @@ namespace Utils
     [UsedImplicitly]
     public class ChairManager
     {
-        private readonly ChairSpawnController.Settings _chairSpawnControllerSettings;
         private readonly ChairController[,] _chairControllers;
+        private readonly ChairSpawnController.Settings _chairSpawnControllerSettings;
 
         public ChairManager(ChairSpawnController.Settings settings)
         {
@@ -21,12 +21,8 @@ namespace Utils
             _chairControllers[row, col] = chairController;
 
             foreach (var rowCol in _chairSpawnControllerSettings.DisabledChairs)
-            {
                 if (row == rowCol.Row && col == rowCol.Col)
-                {
                     chairController.gameObject.SetActive(false);
-                }
-            }
         }
 
         public bool IsOccupied(int row, int col)

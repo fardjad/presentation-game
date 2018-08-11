@@ -17,9 +17,7 @@ namespace Utils
             points.AddRange(navMeshAgent.path.corners);
             if (points.Count < 2) return;
             for (var i = 0; i < points.Count - 1; i++)
-            {
                 Debug.DrawLine(points[i], points[i + 1], color, Time.deltaTime, false);
-            }
         }
 
         public static bool MoveTo(this NavMeshAgent navMeshAgent,

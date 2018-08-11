@@ -10,9 +10,9 @@ namespace Utils.DI
     public class GameInstaller : MonoInstaller<GameInstaller>
     {
         public GameObject ChairPrefab;
-        public GameObject NpcPrefab;
 
         public ChairSpawnController.Settings ChairSpawnControllerSettings;
+        public GameObject NpcPrefab;
 
         public override void InstallBindings()
         {

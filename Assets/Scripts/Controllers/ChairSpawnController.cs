@@ -59,8 +59,8 @@ namespace Controllers
         [Serializable]
         public class RowCol
         {
-            [SerializeField] [UsedImplicitly] public int Row;
             [SerializeField] [UsedImplicitly] public int Col;
+            [SerializeField] [UsedImplicitly] public int Row;
         }
 
         [Serializable]
