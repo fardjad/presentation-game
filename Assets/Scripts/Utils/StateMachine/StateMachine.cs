@@ -27,9 +27,8 @@ namespace Utils.StateMachine
         public void Tick(TimeSpan deltaTime)
         {
             _elapsedTimeForCurrentState += deltaTime;
-            if (!CurrentState.Interruptible && _elapsedTimeForCurrentState < CurrentState.Length) return;
+            var nextState = GetNextState(CurrentState.Transitions, _states, _elapsedTimeForCurrentState < CurrentState.Length);
 
-            var nextState = GetNextState(CurrentState.Transitions, _states);
             if (nextState == null) return;
 
             CurrentState = nextState;
@@ -37,9 +36,11 @@ namespace Utils.StateMachine
             if (OnStateChanged != null) OnStateChanged.Invoke(this, new StateEventArgs(CurrentState));
         }
 
-        private static IState GetNextState(IEnumerable<ITransition> transitions, ICollection<IState> states)
+        private static IState GetNextState(IEnumerable<ITransition> transitions, ICollection<IState> states, bool excludeNonInterruptingTransitions)
         {
             return transitions
+                .OrderBy(transition => transition.Priority)
+                .Where(transition => !excludeNonInterruptingTransitions || transition.MayInterrupt)
                 .Where(transition => transition.Condition.Check())
                 .Select(transition => transition.To)
                 .Where(states.Contains)

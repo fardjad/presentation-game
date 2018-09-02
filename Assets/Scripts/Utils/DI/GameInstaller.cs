@@ -1,3 +1,4 @@
+using System;
 using Controllers;
 using UniRx.Triggers;
 using UnityEngine;
@@ -10,29 +11,29 @@ namespace Utils.DI
     public class GameInstaller : MonoInstaller<GameInstaller>
     {
         public GameObject ChairPrefab;
-
         public ChairSpawnController.Settings ChairSpawnControllerSettings;
         public GameObject NpcPrefab;
+        public GameObject HeadColliderHolderPrefab;
 
         public override void InstallBindings()
         {
-            Container.Bind<ISocketConfig>().To<SocketConfig>().AsSingle();
+            Container.Bind<ISocketConfig>().To<SocketConfig>().AsCached();
             Container.BindFactory<ZmqIpcHelper, ZmqIpcHelper.Factory>();
-            Container.BindInterfacesAndSelfTo<ZmqIpcManager>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<ZmqIpcManager>().AsCached().NonLazy();
 
             Container.Bind<UpdateInputObservableHelper>()
                 .ToSelf()
-                .AsSingle()
+                .AsCached()
                 .WithArguments(this.UpdateAsObservable());
 
             Container.Bind<FixedUpdateInputObservableHelper>()
                 .ToSelf()
-                .AsSingle()
+                .AsCached()
                 .WithArguments(this.FixedUpdateAsObservable());
 
             Container.Bind<LateUpdateInputObservableHelper>()
                 .ToSelf()
-                .AsSingle()
+                .AsCached()
                 .WithArguments(this.LateUpdateAsObservable());
 
             Container.BindFactory<ChairController, ChairController.Factory>()
@@ -43,10 +44,17 @@ namespace Utils.DI
                 .FromComponentInNewPrefab(NpcPrefab)
                 .UnderTransformGroup("NPCs");
 
-            Container.BindInstance(ChairSpawnControllerSettings).AsSingle();
-            Container.Bind<ChairManager>().ToSelf().AsSingle();
+            Container.BindFactory<HeadColliderController, HeadColliderController.Factory>()
+                .FromComponentInNewPrefab(HeadColliderHolderPrefab)
+                .UnderTransformGroup("NPCs");
 
-            Container.Bind<INpcManager>().To<NpcManager>().AsSingle();
+            Container.BindInstance(ChairSpawnControllerSettings).AsCached();
+            Container.Bind<ChairManager>().ToSelf().AsCached();
+            Container.BindInterfacesAndSelfTo<NpcManager>().AsCached();
+
+            Container.BindInterfacesAndSelfTo<TalkManager>().AsCached();
+
+            Container.Bind<ScoreManager>().ToSelf().AsSingle();
         }
     }
 }

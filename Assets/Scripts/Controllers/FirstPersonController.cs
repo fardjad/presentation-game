@@ -1,4 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Linq;
+using Boo.Lang;
+using JetBrains.Annotations;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -12,6 +15,8 @@ namespace Controllers
         private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float Speed = 0.5f;
 
+        private List<IDisposable> _disposables;
+
         [Inject]
         [UsedImplicitly]
         public void Construct(UpdateInputObservableHelper inputObservableHelper)
@@ -21,11 +26,13 @@ namespace Controllers
 
         private void Start()
         {
+            _disposables = new List<IDisposable>();
+
             var speedObservable = this.UpdateAsObservable().Select(_ => Speed).DistinctUntilChanged();
             var hwObservable = _inputObservableHelper.GetHwObservable();
 
             var characterController = GetComponentInChildren<CharacterController>();
-            Observable.CombineLatest(
+            var moveDisposable = Observable.CombineLatest(
                     speedObservable,
                     hwObservable,
                     (speed, hw) => new
@@ -38,9 +45,10 @@ namespace Controllers
                     characterController.SimpleMove(transform.forward * o.hw.Vertical * o.speed +
                                                    transform.right * o.hw.Horizontal * o.speed);
                 });
+            _disposables.Add(moveDisposable);
 
             var animator = GetComponentInChildren<Animator>();
-            Observable.CombineLatest(
+            var animatorDisposable = Observable.CombineLatest(
                     speedObservable,
                     hwObservable,
                     (speed, hw) => new
@@ -55,6 +63,12 @@ namespace Controllers
                     animator.speed =
                         o.speed * 2f; // if character movement speed is 0.5, then animation must play at full speed
                 });
+            _disposables.Add(animatorDisposable);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.ToList().ForEach(d => d.Dispose());
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Utils.StateMachine.Conditions
         private readonly double _lowerBound;
         private readonly string _parameterName;
 
-        public ValueGreaterThan(IBlackboard blackboard, string parameterName, double lowerBound) : base(blackboard)
+        public ValueGreaterThan(IBlackboard blackboard, string parameterName, float lowerBound) : base(blackboard)
         {
             _parameterName = parameterName;
             _lowerBound = lowerBound;
@@ -15,7 +15,7 @@ namespace Utils.StateMachine.Conditions
 
         public override bool Check()
         {
-            return (double) Blackboard.Parameters[_parameterName] > _lowerBound;
+            return (float) Blackboard.Parameters[_parameterName] > _lowerBound;
         }
     }
 }

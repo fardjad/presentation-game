@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace Controllers
         private NavMeshAgent _navMeshAgent;
         private float _origGroundCheckDistance;
         private Rigidbody _rigidbody;
-        private IStateMachine _stateMachine;
+        public IStateMachine StateMachine { get; private set; }
         private float _turnAmount;
         [SerializeField] public List<string> AnimationsStatesWithRootMotion = new List<string>();
         [SerializeField] public float AnimSpeedMultiplier = 1f;
@@ -50,7 +51,7 @@ namespace Controllers
 
         private void Awake()
         {
-            Blackboard = new Blackboard();
+            InitializeStateMachine();
         }
 
         private void Start()
@@ -71,18 +72,28 @@ namespace Controllers
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _navMeshAgent.updateRotation = false;
             _navMeshAgent.updatePosition = true;
+        }
 
-
-            var stateMachineConfig = Resources.Load<TextAsset>("NpcStateMachine").text;
+        private void InitializeStateMachine()
+        {
+            var stateMachineConfig = Resources.Load<TextAsset>("NpcControllerStateMachine").text;
+            Blackboard = new Blackboard();
             var states = ConfigParser.GetStates(stateMachineConfig, Blackboard);
-            _stateMachine = new StateMachine(states);
+            StateMachine = new StateMachine(states);
 
-            Observable.FromEventPattern<EventHandler<StateEventArgs>, StateEventArgs>(h => h.Invoke,
-                    h => _stateMachine.OnStateChanged += h,
-                    h => _stateMachine.OnStateChanged -= h)
-                .Select(e => e.EventArgs.State.Name)
-                .DistinctUntilChanged()
-                .Subscribe(Debug.Log);
+            Blackboard.Parameters["FinishedStandUp"] = "false";
+            Blackboard.Parameters["FinishedFaceForward"] = "false";
+            Blackboard.Parameters["FinishedMoveToCenterOfTheChair"] = "false";
+            Blackboard.Parameters["FinishedWalkToDestination"] = "false";
+            Blackboard.Parameters["FinishedWalkToTheChair"] = "false";
+            Blackboard.Parameters["SitOnTheChair"] = new StateMachineTrigger();
+            Blackboard.Parameters["StandUp"] = new StateMachineTrigger();
+            Blackboard.Parameters["WalkToDestination"] = new StateMachineTrigger();
+
+            Blackboard.Parameters["_chairWalkToPosition"] = Vector3.zero;
+            Blackboard.Parameters["_chairCenter"] = Vector3.zero;
+            Blackboard.Parameters["_chairStandUpPosition"] = Vector3.zero;
+            Blackboard.Parameters["_destination"] = Vector3.zero;
         }
 
 
@@ -281,32 +292,16 @@ namespace Controllers
 
         private void Update()
         {
-            _stateMachine.Tick(TimeSpan.FromSeconds(Time.deltaTime));
+            UpdateStateMachine();
+        }
+
+        private void UpdateStateMachine()
+        {
+            StateMachine.Tick(TimeSpan.FromSeconds(Time.deltaTime));
 
             // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (_stateMachine.CurrentState.Name)
+            switch (StateMachine.CurrentState.Name)
             {
-                case "SetDestination":
-                case "WalkToTheChair":
-                {
-                    var chairWalkToPosition = (Vector3) Blackboard.Parameters["_chairWalkToPosition"];
-                    _navMeshAgent.DrawChosenPath(Color.green);
-                    if (_navMeshAgent.MoveTo(chairWalkToPosition, velocity => Move(velocity, false, false)))
-                        Blackboard.Parameters["FinishedWalkToTheChair"] = "false";
-                    else
-                        Blackboard.Parameters["FinishedWalkToTheChair"] = "true";
-
-                    break;
-                }
-                case "FaceForward":
-                {
-                    if (RotateSmoothly(Quaternion.Euler(0f, 90f, 0f)))
-                        Blackboard.Parameters["FinishedFaceForward"] = "false";
-                    else
-                        Blackboard.Parameters["FinishedFaceForward"] = "true";
-
-                    break;
-                }
                 case "DisableCollider":
                 {
                     _capsule.enabled = false;
@@ -315,8 +310,31 @@ namespace Controllers
                     _navMeshAgent.enabled = false;
                     break;
                 }
+                case "EnableCollider":
+                {
+                    _navMeshAgent.enabled = true;
+                    _rigidbody.isKinematic = false;
+                    _rigidbody.detectCollisions = true;
+                    _capsule.enabled = true;
+                    break;
+                }
+                case "FaceForward":
+                {
+                    Blackboard.Parameters["FinishedFaceForward"] = "true";
+                    if (RotateSmoothly(Quaternion.Euler(0f, 90f, 0f)))
+                        Blackboard.Parameters["FinishedFaceForward"] = "false";
+                    else
+                        Blackboard.Parameters["FinishedFaceForward"] = "true";
+
+                    break;
+                }
+                case "InitialState":
+                {
+                    break;
+                }
                 case "MoveToCenterOfTheChair":
                 {
+                    Blackboard.Parameters["FinishedMoveToCenterOfTheChair"] = "false";
                     var chairCenter = (Vector3) Blackboard.Parameters["_chairCenter"];
                     _animator.SetBool("Seated", true);
                     var destination = VectorBuilder.FromVector(chairCenter)
@@ -329,30 +347,36 @@ namespace Controllers
 
                     break;
                 }
-                case "StandUp":
-                {
-                    var chairStandUpPosition = (Vector3) Blackboard.Parameters["_chairStandUpPosition"];
-                    _animator.SetBool("Seated", false);
-                    if (MoveTransform(chairStandUpPosition))
-                        Blackboard.Parameters["FinishStandUp"] = "false";
-                    else
-                        Blackboard.Parameters["FinishStandUp"] = "true";
-
-                    break;
-                }
-                case "EnableCollider":
-                {
-                    _navMeshAgent.enabled = true;
-                    _navMeshAgent.SetDestination(transform.position);
-                    _rigidbody.isKinematic = false;
-                    _rigidbody.detectCollisions = true;
-                    _capsule.enabled = true;
-                    break;
-                }
                 case "ResetSitTrigger":
                 {
                     var trigger = (StateMachineTrigger) Blackboard.Parameters["SitOnTheChair"];
-                    if (trigger != null) trigger.Set();
+                    trigger.Set();
+                    break;
+                }
+                case "ResetWalkTrigger":
+                {
+                    var trigger = (StateMachineTrigger) Blackboard.Parameters["WalkToDestination"];
+                    trigger.Set();
+                    break;
+                }
+                case "SetDestination":
+                {
+                    break;
+                }
+                case "SittingOnTheChair":
+                {
+                    break;
+                }
+                case "StandUp":
+                {
+                    Blackboard.Parameters["FinishedStandUp"] = "false";
+                    var chairStandUpPosition = (Vector3) Blackboard.Parameters["_chairStandUpPosition"];
+                    _animator.SetBool("Seated", false);
+                    if (MoveTransform(chairStandUpPosition))
+                        Blackboard.Parameters["FinishedStandUp"] = "false";
+                    else
+                        Blackboard.Parameters["FinishedStandUp"] = "true";
+
                     break;
                 }
                 case "WalkToDestination":
@@ -368,16 +392,16 @@ namespace Controllers
 
                     break;
                 }
-                case "ResetWalkTrigger":
+                case "WalkToTheChair":
                 {
-                    var trigger = (StateMachineTrigger) Blackboard.Parameters["WalkToDestination"];
-                    if (trigger != null) trigger.Set();
-                    break;
-                }
-                case "SittingOnTheChair":
-                {
-                    var trigger = (StateMachineTrigger) Blackboard.Parameters["SitOnTheChair"];
-                    if (trigger != null) trigger.Set();
+                    Blackboard.Parameters["FinishedWalkToTheChair"] = "false";
+                    var chairWalkToPosition = (Vector3) Blackboard.Parameters["_chairWalkToPosition"];
+                    _navMeshAgent.DrawChosenPath(Color.green);
+                    if (_navMeshAgent.MoveTo(chairWalkToPosition, velocity => Move(velocity, false, false)))
+                        Blackboard.Parameters["FinishedWalkToTheChair"] = "false";
+                    else
+                        Blackboard.Parameters["FinishedWalkToTheChair"] = "true";
+
                     break;
                 }
             }

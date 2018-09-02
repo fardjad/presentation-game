@@ -8,7 +8,7 @@ namespace Utils.StateMachine.Conditions
         private readonly string _parameterName;
         private readonly double _upperBound;
 
-        public ValueInRange(IBlackboard blackboard, string parameterName, double lowerBound, double upperBound) :
+        public ValueInRange(IBlackboard blackboard, string parameterName, float lowerBound, float upperBound) :
             base(blackboard)
         {
             _parameterName = parameterName;
@@ -18,8 +18,8 @@ namespace Utils.StateMachine.Conditions
 
         public override bool Check()
         {
-            return (double) Blackboard.Parameters[_parameterName] <= _upperBound &&
-                   (double) Blackboard.Parameters[_parameterName] >= _lowerBound;
+            return (float) Blackboard.Parameters[_parameterName] <= _upperBound &&
+                   (float) Blackboard.Parameters[_parameterName] >= _lowerBound;
         }
     }
 }

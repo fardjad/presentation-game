@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Boo.Lang;
 using JetBrains.Annotations;
 using UniRx;
 using UniRx.Triggers;
@@ -11,6 +13,7 @@ namespace Controllers
     public class HeadBobbingController : MonoBehaviour
     {
         private const float Tolerance = 10e-5f;
+        private List<IDisposable> _disposables;
 
         private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float BobbingAmount = 0.2f;
@@ -27,6 +30,8 @@ namespace Controllers
 
         private void Start()
         {
+            _disposables = new List<IDisposable>();
+
             var initialLocalPositionObservable = Observable.Return(transform.localPosition);
 
             var isStandingStillObservable =
@@ -46,9 +51,11 @@ namespace Controllers
                 .Select(Mathf.Sin)
                 .Select(value => value * BobbingAmount);
 
-            initialLocalPositionObservable
+            var ilpDisposable = initialLocalPositionObservable
                 .Sample(sineWaveObservable.Where(value => Math.Abs(value) < Tolerance))
                 .Subscribe(initialLocalPosition => transform.localPosition = initialLocalPosition);
+
+            _disposables.Add(ilpDisposable);
 
             var translateChangeObservable = sineWaveObservable.Select(value => value * BobbingAmount);
 
@@ -56,7 +63,7 @@ namespace Controllers
                 .Select(hw => Mathf.Abs(hw.Horizontal) + Mathf.Abs(hw.Vertical))
                 .Select(sumOfAxes => Mathf.Clamp(sumOfAxes, 0f, 1f));
 
-            Observable.CombineLatest(
+            var positionDisposable = Observable.CombineLatest(
                     translateChangeObservable,
                     clampedSumOfAxesObservable,
                     initialLocalPositionObservable,
@@ -64,6 +71,13 @@ namespace Controllers
                         new Vector3(0, translateChange * clampedSumOfAxes, 0) + initialLocalPosition
                 )
                 .Subscribe(localPosition => transform.localPosition = localPosition);
+
+            _disposables.Add(positionDisposable);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.ToList().ForEach(d => d.Dispose());
         }
     }
 }

@@ -20,6 +20,13 @@ namespace Utils.Input
                 .Where(isDown => isDown);
         }
 
+        public IObservable<bool> GetMouseDownObservable(int mouseButton)
+        {
+            return _updateObservable
+                .Select(_ => UnityEngine.Input.GetMouseButtonDown(mouseButton))
+                .Where(isDown => isDown);
+        }
+
 
         public IObservable<Hw> GetHwObservable()
         {

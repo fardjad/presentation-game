@@ -1,4 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Linq;
+using Boo.Lang;
+using JetBrains.Annotations;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -13,6 +16,8 @@ namespace Controllers
         [SerializeField] public float Sensitivity = 2f;
         [SerializeField] public float Smoothing = 2f;
 
+        private List<IDisposable> _disposables;
+
         [Inject]
         [UsedImplicitly]
         public void Construct(UpdateInputObservableHelper inputObservableHelper)
@@ -22,6 +27,8 @@ namespace Controllers
 
         private void Start()
         {
+            _disposables = new List<IDisposable>();
+
             var sensitivityObservable = this.UpdateAsObservable().Select(_ => Sensitivity).DistinctUntilChanged();
             var smoothingObservable = this.UpdateAsObservable().Select(_ => Smoothing).DistinctUntilChanged();
             var characterControllerObservable = Observable.Return(GetComponentInParent<CharacterController>());
@@ -61,7 +68,7 @@ namespace Controllers
                 return new Vector3(result.x, Mathf.Clamp(result.y, -50 /* down */, 70 /* up */));
             });
 
-            Observable.CombineLatest(
+            var characterControllerRotationDisposable = Observable.CombineLatest(
                     characterControllerObservable.Select(characterController => characterController.transform.up),
                     mouseLookObservable.Select(mouseLook => mouseLook.x),
                     (up, mouseLookX) =>
@@ -71,8 +78,18 @@ namespace Controllers
                     (localRotation, characterController) => new {localRotation, characterController})
                 .Subscribe(o => o.characterController.transform.localRotation = o.localRotation);
 
-            mouseLookObservable.Select(mouseLook => Quaternion.AngleAxis(-mouseLook.y, Vector3.right))
+            _disposables.Add(characterControllerRotationDisposable);
+
+            var mouseLookDisposable = mouseLookObservable
+                .Select(mouseLook => Quaternion.AngleAxis(-mouseLook.y, Vector3.right))
                 .Subscribe(localRotation => transform.localRotation = localRotation);
+
+            _disposables.Add(mouseLookDisposable);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.ToList().ForEach(d => d.Dispose());
         }
     }
 }

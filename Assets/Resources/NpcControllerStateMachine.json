@@ -1,0 +1,402 @@
+{
+  "nodes": [
+    {
+      "nodeId": "ae3ce10e-6328-43fc-83e4-f2bdda474449",
+      "name": "InitialState",
+      "interruptible": false,
+      "length": 0,
+      "x": -762.75,
+      "y": -70.49999999999989
+    },
+    {
+      "nodeId": "2f69f82b-c7c7-48c2-96ef-05add3fda450",
+      "name": "SetDestination",
+      "interruptible": false,
+      "length": 0,
+      "x": -615.5,
+      "y": -72.49999999999994
+    },
+    {
+      "nodeId": "e7caea51-1bb3-4136-b80b-7d260e9fea4e",
+      "name": "WalkToTheChair",
+      "interruptible": false,
+      "length": 0,
+      "x": -604.25,
+      "y": 130.25
+    },
+    {
+      "nodeId": "6398a2b1-a161-426c-a329-2600de4956c6",
+      "name": "FaceForward",
+      "interruptible": false,
+      "length": 0,
+      "x": -249.24999999999977,
+      "y": 184.25
+    },
+    {
+      "nodeId": "60e0003b-2470-47e7-a5c0-19215a70c6eb",
+      "name": "DisableCollider",
+      "interruptible": false,
+      "length": 0,
+      "x": -439.75000000000006,
+      "y": -15.75
+    },
+    {
+      "nodeId": "b4ed52dc-3022-488e-9bc2-df63a5751f69",
+      "name": "MoveToCenterOfTheChair",
+      "interruptible": false,
+      "length": 0,
+      "x": -76.99999999999989,
+      "y": -70.25000000000009
+    },
+    {
+      "nodeId": "feba25f9-7dda-40c1-a2a8-a38ea95509cb",
+      "name": "SittingOnTheChair",
+      "interruptible": false,
+      "length": "0",
+      "x": 199.50000000000017,
+      "y": -65.99999999999986
+    },
+    {
+      "nodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "name": "StandUp",
+      "interruptible": false,
+      "length": 0,
+      "x": 490,
+      "y": 174.00000000000045
+    },
+    {
+      "nodeId": "1a3c0074-af9b-4c93-8608-feeb256e1928",
+      "name": "EnableCollider",
+      "interruptible": false,
+      "length": "0",
+      "x": 798.0000000000002,
+      "y": 175.5
+    },
+    {
+      "nodeId": "6967372b-3973-4bed-bc40-d39b2b8a4e69",
+      "name": "ResetSitTrigger",
+      "interruptible": false,
+      "length": 0,
+      "x": 352,
+      "y": 46
+    },
+    {
+      "nodeId": "47b12ebb-218c-41f3-a5ff-c69f8824349c",
+      "name": "WalkToDestination",
+      "interruptible": false,
+      "length": 0,
+      "x": -755,
+      "y": 296
+    },
+    {
+      "nodeId": "c6204854-89c8-43c1-9790-5376b1345ae6",
+      "name": "ResetWalkTrigger",
+      "interruptible": false,
+      "length": 0,
+      "x": 217.00000000000034,
+      "y": 218.5000000000001
+    }
+  ],
+  "transitions": [
+    {
+      "transitionId": "1cec2a11-0405-40ec-b63c-6513f92293b8",
+      "fromNodeId": "ae3ce10e-6328-43fc-83e4-f2bdda474449",
+      "toNodeId": "2f69f82b-c7c7-48c2-96ef-05add3fda450",
+      "controlPointPosition": {
+        "x": -702.5,
+        "y": -74.25
+      },
+      "condition": {
+        "type": 5,
+        "parameters": {
+          "parameterName": "SitOnTheChair"
+        }
+      }
+    },
+    {
+      "transitionId": "638423a0-648e-49a6-9c90-514a2b8c7201",
+      "fromNodeId": "2f69f82b-c7c7-48c2-96ef-05add3fda450",
+      "toNodeId": "e7caea51-1bb3-4136-b80b-7d260e9fea4e",
+      "controlPointPosition": {
+        "x": -613.75,
+        "y": 29.5
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "5ba84650-a0b9-493d-be93-2368a1fc59a4",
+      "fromNodeId": "e7caea51-1bb3-4136-b80b-7d260e9fea4e",
+      "toNodeId": "60e0003b-2470-47e7-a5c0-19215a70c6eb",
+      "controlPointPosition": {
+        "x": -425.75000000000006,
+        "y": 139.5
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedWalkToTheChair",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "b1928c69-6bcd-45ce-bc74-ee205e0e86ca",
+      "fromNodeId": "e7caea51-1bb3-4136-b80b-7d260e9fea4e",
+      "toNodeId": "e7caea51-1bb3-4136-b80b-7d260e9fea4e",
+      "controlPointPosition": {
+        "x": -602.5,
+        "y": 216.25
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedWalkToTheChair",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "2dc33cd3-2442-47da-81ed-126225739a6b",
+      "fromNodeId": "60e0003b-2470-47e7-a5c0-19215a70c6eb",
+      "toNodeId": "6398a2b1-a161-426c-a329-2600de4956c6",
+      "controlPointPosition": {
+        "x": -251,
+        "y": -9.99999999999983
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "423e158e-21f6-4e73-a87f-82de0d07469d",
+      "fromNodeId": "6398a2b1-a161-426c-a329-2600de4956c6",
+      "toNodeId": "6398a2b1-a161-426c-a329-2600de4956c6",
+      "controlPointPosition": {
+        "x": -246.25000000000023,
+        "y": 273.75
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedFaceForward",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "01a3e806-9e8b-4b09-bc3c-c5433eb80065",
+      "fromNodeId": "6398a2b1-a161-426c-a329-2600de4956c6",
+      "toNodeId": "b4ed52dc-3022-488e-9bc2-df63a5751f69",
+      "controlPointPosition": {
+        "x": -64.49999999999977,
+        "y": 192.25000000000023
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedFaceForward",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "7075f087-214d-43d5-ba77-75137ef676bb",
+      "fromNodeId": "b4ed52dc-3022-488e-9bc2-df63a5751f69",
+      "toNodeId": "b4ed52dc-3022-488e-9bc2-df63a5751f69",
+      "controlPointPosition": {
+        "x": -72.9999999999996,
+        "y": -229.99999999999977
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedMoveToCenterOfTheChair",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "6b0c1308-50da-4216-95de-93ed0172e38e",
+      "fromNodeId": "b4ed52dc-3022-488e-9bc2-df63a5751f69",
+      "toNodeId": "feba25f9-7dda-40c1-a2a8-a38ea95509cb",
+      "controlPointPosition": {
+        "x": 58.500000000000085,
+        "y": -64.49999999999989
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedMoveToCenterOfTheChair",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "9c21be6b-8730-4bc0-8470-c84bdd2dc115",
+      "fromNodeId": "feba25f9-7dda-40c1-a2a8-a38ea95509cb",
+      "toNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "controlPointPosition": {
+        "x": 481,
+        "y": -62.99999999999997
+      },
+      "condition": {
+        "type": 5,
+        "parameters": {
+          "parameterName": "StandUp"
+        }
+      }
+    },
+    {
+      "transitionId": "93751f78-1676-4c31-a536-bfd05c5cde06",
+      "fromNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "toNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "controlPointPosition": {
+        "x": 493.50000000000045,
+        "y": 262.0000000000002
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedStandUp",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "2fe71f84-ec99-470a-81b5-41a9dea5b20c",
+      "fromNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "toNodeId": "1a3c0074-af9b-4c93-8608-feeb256e1928",
+      "controlPointPosition": {
+        "x": 639.0000000000001,
+        "y": 174.74999999999994
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedStandUp",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "d79811b5-6e31-4b44-be9e-445160488345",
+      "fromNodeId": "1a3c0074-af9b-4c93-8608-feeb256e1928",
+      "toNodeId": "ae3ce10e-6328-43fc-83e4-f2bdda474449",
+      "controlPointPosition": {
+        "x": -39.749999999999886,
+        "y": -614.25
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "9e548dfd-e537-460e-8bb2-0b71d48ebca2",
+      "fromNodeId": "feba25f9-7dda-40c1-a2a8-a38ea95509cb",
+      "toNodeId": "6967372b-3973-4bed-bc40-d39b2b8a4e69",
+      "controlPointPosition": {
+        "x": 203,
+        "y": 43
+      },
+      "condition": {
+        "type": 5,
+        "parameters": {
+          "parameterName": "SitOnTheChair"
+        }
+      }
+    },
+    {
+      "transitionId": "0cc09fdb-7fd8-4aba-932a-66b6295c7374",
+      "fromNodeId": "6967372b-3973-4bed-bc40-d39b2b8a4e69",
+      "toNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "controlPointPosition": {
+        "x": 349,
+        "y": 172
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "0b83ae59-f15c-472f-8aa6-9f81526cdf56",
+      "fromNodeId": "ae3ce10e-6328-43fc-83e4-f2bdda474449",
+      "toNodeId": "47b12ebb-218c-41f3-a5ff-c69f8824349c",
+      "controlPointPosition": {
+        "x": -760,
+        "y": 118
+      },
+      "condition": {
+        "type": 5,
+        "parameters": {
+          "parameterName": "WalkToDestination"
+        }
+      }
+    },
+    {
+      "transitionId": "d0d37fb0-1434-4166-9abf-6864dd984942",
+      "fromNodeId": "47b12ebb-218c-41f3-a5ff-c69f8824349c",
+      "toNodeId": "47b12ebb-218c-41f3-a5ff-c69f8824349c",
+      "controlPointPosition": {
+        "x": -756,
+        "y": 450
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedWalkToDestination",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "abb8f6a5-667d-4460-aa93-db4816305bf9",
+      "fromNodeId": "47b12ebb-218c-41f3-a5ff-c69f8824349c",
+      "toNodeId": "ae3ce10e-6328-43fc-83e4-f2bdda474449",
+      "controlPointPosition": {
+        "x": -882,
+        "y": 124
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "FinishedWalkToDestination",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "37519a06-64e2-44ba-a1c0-27e8fa21bb84",
+      "fromNodeId": "feba25f9-7dda-40c1-a2a8-a38ea95509cb",
+      "toNodeId": "c6204854-89c8-43c1-9790-5376b1345ae6",
+      "controlPointPosition": {
+        "x": 67.00000000000045,
+        "y": 94.50000000000011
+      },
+      "condition": {
+        "type": 5,
+        "parameters": {
+          "parameterName": "WalkToDestination"
+        }
+      }
+    },
+    {
+      "transitionId": "5ed0aa1c-fd63-4181-9458-2e34571ad541",
+      "fromNodeId": "c6204854-89c8-43c1-9790-5376b1345ae6",
+      "toNodeId": "1862ba64-e62e-494c-995c-ce48afbbd412",
+      "controlPointPosition": {
+        "x": 363.50000000000006,
+        "y": 349.0000000000002
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    }
+  ]
+}

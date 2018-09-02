@@ -12,7 +12,6 @@ namespace Utils.StateMachine.Parser
 
         private static object ToObject(JToken token)
         {
-            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (token.Type)
             {
                 case JTokenType.Object:

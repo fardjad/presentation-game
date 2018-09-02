@@ -1,0 +1,254 @@
+{
+  "nodes": [
+    {
+      "nodeId": "c7d9bbc1-9f0e-4294-b8bf-4a19772d7600",
+      "name": "Idle",
+      "length": 0,
+      "x": -438,
+      "y": -14
+    },
+    {
+      "nodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "name": "PlaySittingAnimation",
+      "length": 0,
+      "x": -255,
+      "y": -16
+    },
+    {
+      "nodeId": "9220feba-fe93-404a-894c-aa0085402f3a",
+      "name": "TalkToLeft",
+      "length": 0,
+      "x": -81,
+      "y": -118
+    },
+    {
+      "nodeId": "fffdf7a4-3bc7-450e-9a77-775a0038dbb1",
+      "name": "TalkToRight",
+      "length": 0,
+      "x": -84,
+      "y": 98
+    },
+    {
+      "nodeId": "4886171d-4b86-40a6-aaa8-cf53a1520858",
+      "name": "PlayDistractedAnimation",
+      "length": 1000,
+      "x": 72,
+      "y": -16
+    }
+  ],
+  "transitions": [
+    {
+      "transitionId": "77b6db02-a353-4f2c-b8a4-516d5d38186a",
+      "fromNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "toNodeId": "9220feba-fe93-404a-894c-aa0085402f3a",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -175,
+        "y": -74.248046875
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToLeft",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "6c31fabb-c0a1-4f4e-bca8-60a5c29d53bc",
+      "fromNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "toNodeId": "fffdf7a4-3bc7-450e-9a77-775a0038dbb1",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -163,
+        "y": 49.751953125
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToRight",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "cab88e4b-361b-49f1-8464-9337c6131486",
+      "fromNodeId": "9220feba-fe93-404a-894c-aa0085402f3a",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -243,
+        "y": -146.98372395833331
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "IsRed",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "0f9712ed-85ba-4535-9149-997aad9adb1b",
+      "fromNodeId": "c7d9bbc1-9f0e-4294-b8bf-4a19772d7600",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -367,
+        "y": -27.09700520833333
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "IsRed",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "15a147a5-c5c5-463a-abb6-97a3e35e78af",
+      "fromNodeId": "fffdf7a4-3bc7-450e-9a77-775a0038dbb1",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -227,
+        "y": 108.45963541666666
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "IsRed",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "0e526273-3eb3-4840-b342-038a39abdc91",
+      "fromNodeId": "9220feba-fe93-404a-894c-aa0085402f3a",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -216,
+        "y": -122.98372395833333
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToLeft",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "0c017f74-713d-469f-8d67-2ed5c92e044d",
+      "fromNodeId": "fffdf7a4-3bc7-450e-9a77-775a0038dbb1",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -207,
+        "y": 89.45963541666666
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToRight",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "8603e016-5ddb-4f92-8b00-482750b39f89",
+      "fromNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "toNodeId": "c7d9bbc1-9f0e-4294-b8bf-4a19772d7600",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -361,
+        "y": -5.248046875
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "IsRed",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "c98e1cf5-8d57-4c5d-ac03-9f79b658fdc1",
+      "fromNodeId": "4886171d-4b86-40a6-aaa8-cf53a1520858",
+      "toNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "priority": 0,
+      "mayInterrupt": false,
+      "controlPointPosition": {
+        "x": -92,
+        "y": -50.001953125
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "IsRed",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "0257f4cc-7c2a-42ed-9fa8-dfd85d3e4aae",
+      "fromNodeId": "7d5b5886-ae37-458e-937b-e06184e14eb5",
+      "toNodeId": "4886171d-4b86-40a6-aaa8-cf53a1520858",
+      "priority": 999,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -90,
+        "y": 12.751953125
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "9b808c4c-801a-41f7-ac3b-5f8780be41a8",
+      "fromNodeId": "4886171d-4b86-40a6-aaa8-cf53a1520858",
+      "toNodeId": "9220feba-fe93-404a-894c-aa0085402f3a",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": 47,
+        "y": -117.37630208333331
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToLeft",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "a42d2914-535a-475d-ab9d-c50425c59029",
+      "fromNodeId": "4886171d-4b86-40a6-aaa8-cf53a1520858",
+      "toNodeId": "fffdf7a4-3bc7-450e-9a77-775a0038dbb1",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": 72,
+        "y": 86.62369791666667
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "TalkToRight",
+          "expectedValue": "true"
+        }
+      }
+    }
+  ]
+}

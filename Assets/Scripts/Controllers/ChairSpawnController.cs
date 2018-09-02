@@ -61,6 +61,32 @@ namespace Controllers
         {
             [SerializeField] [UsedImplicitly] public int Col;
             [SerializeField] [UsedImplicitly] public int Row;
+
+            public RowCol(int row, int col)
+            {
+                Row = row;
+                Col = col;
+            }
+
+            private bool Equals(RowCol other)
+            {
+                return Col == other.Col && Row == other.Row;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                return obj.GetType() == this.GetType() && Equals((RowCol) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (Col * 397) ^ Row;
+                }
+            }
         }
 
         [Serializable]

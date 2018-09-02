@@ -1,0 +1,248 @@
+{
+  "nodes": [
+    {
+      "nodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "name": "SittingOnTheChair",
+      "interruptible": false,
+      "length": 0,
+      "x": -460,
+      "y": 74
+    },
+    {
+      "nodeId": "f5de7c87-f6a1-485f-8a6b-a8ebd591fd6c",
+      "name": "Green",
+      "interruptible": false,
+      "length": 0,
+      "x": 18,
+      "y": -103
+    },
+    {
+      "nodeId": "59c32828-7397-46f7-b162-2262fa02ddee",
+      "name": "Yellow",
+      "interruptible": false,
+      "length": 0,
+      "x": 26,
+      "y": 67
+    },
+    {
+      "nodeId": "41ff322e-e1a5-45a0-a607-9c398731c788",
+      "name": "Red",
+      "interruptible": false,
+      "length": 0,
+      "x": 32,
+      "y": 218
+    },
+    {
+      "nodeId": "851036b0-0ff4-4e9f-89e0-dcc3ec1a9059",
+      "name": "IncreaseAttention",
+      "interruptible": false,
+      "length": 0,
+      "x": -461,
+      "y": -180
+    },
+    {
+      "nodeId": "c56df47e-0c24-4394-819b-fb13472bdd0c",
+      "name": "DecreaseAttention",
+      "interruptible": false,
+      "length": 0,
+      "x": -459,
+      "y": 300
+    },
+    {
+      "nodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "name": "UpdateIndicator",
+      "interruptible": false,
+      "length": 0,
+      "x": -228,
+      "y": 64
+    },
+    {
+      "nodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "name": "CheckSittingStatus",
+      "interruptible": false,
+      "length": 0,
+      "x": -690,
+      "y": 73
+    }
+  ],
+  "transitions": [
+    {
+      "transitionId": "cda288db-269d-4b38-a335-373f9e544463",
+      "fromNodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "toNodeId": "851036b0-0ff4-4e9f-89e0-dcc3ec1a9059",
+      "controlPointPosition": {
+        "x": -460,
+        "y": -26.87044270833333
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "PlayerIsLookingAtNpc",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "967166a7-9a75-4f68-9442-b87d218fe597",
+      "fromNodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "toNodeId": "c56df47e-0c24-4394-819b-fb13472bdd0c",
+      "controlPointPosition": {
+        "x": -448,
+        "y": 163.12955729166669
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "PlayerIsLookingAtNpc",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "36e20670-8e0c-4184-ae7c-9219ec7ae2d1",
+      "fromNodeId": "851036b0-0ff4-4e9f-89e0-dcc3ec1a9059",
+      "toNodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "controlPointPosition": {
+        "x": -340,
+        "y": -16.115234375
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "f922fd48-1615-407a-9825-6c84124faa62",
+      "fromNodeId": "c56df47e-0c24-4394-819b-fb13472bdd0c",
+      "toNodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "controlPointPosition": {
+        "x": -321,
+        "y": 150.84700520833337
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "cae8363a-1fc4-4088-b8eb-99fa697ffb79",
+      "fromNodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "toNodeId": "f5de7c87-f6a1-485f-8a6b-a8ebd591fd6c",
+      "controlPointPosition": {
+        "x": -131,
+        "y": -42.71614583333337
+      },
+      "condition": {
+        "type": 2,
+        "parameters": {
+          "parameterName": "Attention",
+          "lowerBound": "0.8"
+        }
+      }
+    },
+    {
+      "transitionId": "8b7f22a9-f643-4afb-80b3-76c77e58e898",
+      "fromNodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "toNodeId": "41ff322e-e1a5-45a0-a607-9c398731c788",
+      "controlPointPosition": {
+        "x": -117,
+        "y": 181.28385416666663
+      },
+      "condition": {
+        "type": 3,
+        "parameters": {
+          "parameterName": "Attention",
+          "upperBound": "0.2"
+        }
+      }
+    },
+    {
+      "transitionId": "453ec65e-4be9-401d-a8d4-4fda945adafd",
+      "fromNodeId": "55fd0b18-edbc-4f66-8de1-008135ce7dfc",
+      "toNodeId": "59c32828-7397-46f7-b162-2262fa02ddee",
+      "controlPointPosition": {
+        "x": -80,
+        "y": 133.28385416666663
+      },
+      "condition": {
+        "type": 4,
+        "parameters": {
+          "parameterName": "Attention",
+          "lowerBound": "0.2",
+          "upperBound": "0.8"
+        }
+      }
+    },
+    {
+      "transitionId": "894001fb-4951-4df2-abfb-9235ded9f604",
+      "fromNodeId": "f5de7c87-f6a1-485f-8a6b-a8ebd591fd6c",
+      "toNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "controlPointPosition": {
+        "x": -250,
+        "y": -195.47135416666669
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "604d223d-bacf-4d82-aa98-a29c806b5a76",
+      "fromNodeId": "59c32828-7397-46f7-b162-2262fa02ddee",
+      "toNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "controlPointPosition": {
+        "x": -581,
+        "y": 72.236328125
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "05cab44c-6a0a-4103-a907-e8ebabfffe7f",
+      "fromNodeId": "41ff322e-e1a5-45a0-a607-9c398731c788",
+      "toNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "controlPointPosition": {
+        "x": -206,
+        "y": 321.22981770833326
+      },
+      "condition": {
+        "type": 0,
+        "parameters": {}
+      }
+    },
+    {
+      "transitionId": "4b3d4f30-f0e0-45aa-ac3a-f528171be481",
+      "fromNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "toNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "controlPointPosition": {
+        "x": -693,
+        "y": -44.67513020833337
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "SittingOnTheChair",
+          "expectedValue": "false"
+        }
+      }
+    },
+    {
+      "transitionId": "ce25d2f0-b116-4e9c-b5be-67daa447494c",
+      "fromNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
+      "toNodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "controlPointPosition": {
+        "x": -563,
+        "y": 117.32486979166666
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "SittingOnTheChair",
+          "expectedValue": "true"
+        }
+      }
+    }
+  ]
+}

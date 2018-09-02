@@ -18,9 +18,8 @@ namespace Utils.StateMachine.Parser
                 var node = (Dictionary<string, object>) nodeObject;
                 var nodeId = (string) node["nodeId"];
                 var name = (string) node["name"];
-                var interruptible = (bool) node["interruptible"];
                 var length = double.Parse(node["length"].ToString());
-                var state = new State(name, interruptible, TimeSpan.FromMilliseconds(length));
+                var state = new State(name, TimeSpan.FromMilliseconds(length));
                 statesDictionary[nodeId] = state;
             });
 
@@ -30,6 +29,9 @@ namespace Utils.StateMachine.Parser
                 var transitionDictionary = (Dictionary<string, object>) transitionObject;
                 var fromNodeId = (string) transitionDictionary["fromNodeId"];
                 var toNodeId = (string) transitionDictionary["toNodeId"];
+                var priority = transitionDictionary.ContainsKey("priority") ? int.Parse(transitionDictionary["priority"].ToString()) : 0;
+                var mayInterrupt = transitionDictionary.ContainsKey("mayInterrupt") && (bool) transitionDictionary["mayInterrupt"];
+
                 var conditionDictionary = (Dictionary<string, object>) transitionDictionary["condition"];
                 var conditionType = int.Parse(conditionDictionary["type"].ToString());
                 var conditionParametersDictionary = (Dictionary<string, object>) conditionDictionary["parameters"];
@@ -47,18 +49,18 @@ namespace Utils.StateMachine.Parser
                     case 2:
                         condition = new ValueGreaterThan(blackboard,
                             (string) conditionParametersDictionary["parameterName"],
-                            double.Parse(conditionParametersDictionary["lowerBound"].ToString()));
+                            float.Parse(conditionParametersDictionary["lowerBound"].ToString()));
                         break;
                     case 3:
                         condition = new ValueLessThan(blackboard,
                             (string) conditionParametersDictionary["parameterName"],
-                            double.Parse(conditionParametersDictionary["upperBound"].ToString()));
+                            float.Parse(conditionParametersDictionary["upperBound"].ToString()));
                         break;
                     case 4:
                         condition = new ValueInRange(blackboard,
                             (string) conditionParametersDictionary["parameterName"],
-                            double.Parse(conditionParametersDictionary["lowerBound"].ToString()),
-                            double.Parse(conditionParametersDictionary["upperBound"].ToString()));
+                            float.Parse(conditionParametersDictionary["lowerBound"].ToString()),
+                            float.Parse(conditionParametersDictionary["upperBound"].ToString()));
                         break;
                     case 5:
                         condition = new CheckTrigger(blackboard,
@@ -68,7 +70,7 @@ namespace Utils.StateMachine.Parser
                         throw new JsonException("Invalid condition type");
                 }
 
-                var transition = new Transition(condition, statesDictionary[toNodeId]);
+                var transition = new Transition(condition, statesDictionary[toNodeId], priority, mayInterrupt);
                 statesDictionary[fromNodeId].Transitions.Add(transition);
             });
             return statesDictionary.Values;

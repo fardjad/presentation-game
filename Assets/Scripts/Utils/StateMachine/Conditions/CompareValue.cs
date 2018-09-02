@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using Utils.StateMachine.Blackboard;
+﻿using Utils.StateMachine.Blackboard;
 
 namespace Utils.StateMachine.Conditions
 {
@@ -16,11 +15,7 @@ namespace Utils.StateMachine.Conditions
 
         public override bool Check()
         {
-            if (Blackboard.Parameters.ContainsKey(_parameterName))
-                return Blackboard.Parameters[_parameterName].Equals(_expectedValue);
-
-            Debug.LogError(string.Format("{0} is not defined in the blackboard", _parameterName));
-            return false;
+            return Blackboard.Parameters[_parameterName].Equals(_expectedValue);
         }
     }
 }

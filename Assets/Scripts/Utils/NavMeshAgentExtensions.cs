@@ -38,7 +38,7 @@ namespace Utils
             }
 
             gameObjectMoveDelegate.Invoke(Vector3.zero);
-            return navMeshAgent.velocity.magnitude < Tolerance;
+            return navMeshAgent.velocity.magnitude > Tolerance;
         }
     }
 }
