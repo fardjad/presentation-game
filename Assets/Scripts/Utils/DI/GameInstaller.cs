@@ -55,6 +55,8 @@ namespace Utils.DI
             Container.BindInterfacesAndSelfTo<TalkManager>().AsCached();
 
             Container.Bind<ScoreManager>().ToSelf().AsSingle();
+
+            Container.Bind<CommunicationManager>().ToSelf().AsSingle().NonLazy();
         }
     }
 }

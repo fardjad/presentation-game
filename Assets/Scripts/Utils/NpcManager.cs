@@ -81,6 +81,26 @@ namespace Utils
             }
         }
 
+        public void RandomlyRaiseHand()
+        {
+            PutAllHandsDown();
+            var controllers = (from pair in NpcControllerDictionary select pair.Value).ToList();
+            var rand = new Random();
+            var toSkip = rand.Next(0, NpcControllerDictionary.Count);
+            var randomNpcController = controllers.Skip(toSkip).Take(1).First();
+            var npcTalkController = randomNpcController.gameObject.GetComponent<NpcTalkController>();
+            npcTalkController.Blackboard.Parameters["RaiseHand"] = "true";
+        }
+
+        public void PutAllHandsDown()
+        {
+            var controllers = from pair in NpcControllerDictionary select pair.Value;
+            controllers.Select(npcController => npcController.gameObject.GetComponent<NpcTalkController>().Blackboard)
+                .ToList()
+                .ForEach(
+                    blackboard => { blackboard.Parameters["RaiseHand"] = "false"; });
+        }
+
         public void Dispose()
         {
             _npcChairDictionary.Clear();

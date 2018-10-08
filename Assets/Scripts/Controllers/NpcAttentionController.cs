@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 using Utils.StateMachine;
 using Utils.StateMachine.Blackboard;
 using Utils.StateMachine.Parser;
+using Zenject;
 using Random = System.Random;
 
 namespace Controllers
@@ -20,6 +24,8 @@ namespace Controllers
         private Animator _animator;
         private ISubject<string> _currentStateSubject;
         private IDisposable _currentStateSubjectDisposable;
+        private CommunicationManager _communicationManager;
+        private IDisposable _qaDisposable;
 
         private void Awake()
         {
@@ -39,10 +45,29 @@ namespace Controllers
             Blackboard.Parameters["PlayerIsLookingAtNpc"] = "false";
             Blackboard.Parameters["Attention"] = 1f;
             Blackboard.Parameters["SittingOnTheChair"] = "false";
+            Blackboard.Parameters["QATime"] = "false";
+        }
+
+        [Inject]
+        [UsedImplicitly]
+        public void Construct(CommunicationManager communicationManager)
+        {
+            _communicationManager = communicationManager;
         }
 
         private void Start()
         {
+            _qaDisposable = _communicationManager.GetObservableForType("qa")
+                .Select(response => (bool) response)
+                .Subscribe(qaTime =>
+                {
+                    Blackboard.Parameters["QATime"] = qaTime ? "true" : "false";
+                    if (qaTime)
+                    {
+                        Blackboard.Parameters["Attention"] = 1f;
+                    }
+                });
+
             _currentStateSubject = new Subject<string>();
 
             var npcControllerStateMachine = _npcController.StateMachine;
@@ -125,7 +150,11 @@ namespace Controllers
                     _currentStateSubject.OnNext(StateMachine.CurrentState.Name);
                     break;
                 }
-                case "SittingOnTheChair":
+                case "SittingNoQA":
+                {
+                    break;
+                }
+                case "CheckQATime":
                 {
                     break;
                 }
@@ -155,11 +184,13 @@ namespace Controllers
             _animator.ResetTrigger("Red1");
             _animator.ResetTrigger("Red2");
             _animator.ResetTrigger("Red3");
+            _animator.ResetTrigger("RaiseHand");
         }
 
         private void OnDestroy()
         {
             if (_currentStateSubjectDisposable != null) _currentStateSubjectDisposable.Dispose();
+            _qaDisposable.Dispose();
         }
     }
 }

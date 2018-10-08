@@ -34,6 +34,13 @@
       "length": 1000,
       "x": 72,
       "y": -16
+    },
+    {
+      "nodeId": "3edd915d-b94b-49a4-aa3c-e4e7da695ab9",
+      "name": "RaiseHand",
+      "length": 0,
+      "x": -445.3333333333333,
+      "y": -114
     }
   ],
   "transitions": [
@@ -247,6 +254,42 @@
         "parameters": {
           "parameterName": "TalkToRight",
           "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "c927b89f-3f44-4110-9fd4-b036db15e183",
+      "fromNodeId": "c7d9bbc1-9f0e-4294-b8bf-4a19772d7600",
+      "toNodeId": "3edd915d-b94b-49a4-aa3c-e4e7da695ab9",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -493.33333333333337,
+        "y": -51.91796875000002
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "RaiseHand",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "e38856e5-ab1f-4134-bda1-c930807fa81c",
+      "fromNodeId": "3edd915d-b94b-49a4-aa3c-e4e7da695ab9",
+      "toNodeId": "c7d9bbc1-9f0e-4294-b8bf-4a19772d7600",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -393.3333333333333,
+        "y": -61.684895833333314
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "RaiseHand",
+          "expectedValue": "false"
         }
       }
     }

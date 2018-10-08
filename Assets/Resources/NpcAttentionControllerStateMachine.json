@@ -2,7 +2,7 @@
   "nodes": [
     {
       "nodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
-      "name": "SittingOnTheChair",
+      "name": "SittingNoQA",
       "interruptible": false,
       "length": 0,
       "x": -460,
@@ -61,8 +61,15 @@
       "name": "CheckSittingStatus",
       "interruptible": false,
       "length": 0,
-      "x": -690,
-      "y": 73
+      "x": -788,
+      "y": 69
+    },
+    {
+      "nodeId": "4f7d825b-92d6-4518-b5b4-146ed9d22f19",
+      "name": "CheckQATime",
+      "length": 0,
+      "x": -637,
+      "y": -112
     }
   ],
   "transitions": [
@@ -217,8 +224,8 @@
       "fromNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
       "toNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
       "controlPointPosition": {
-        "x": -693,
-        "y": -44.67513020833337
+        "x": -789,
+        "y": -53.67513020833337
       },
       "condition": {
         "type": 1,
@@ -231,16 +238,52 @@
     {
       "transitionId": "ce25d2f0-b116-4e9c-b5be-67daa447494c",
       "fromNodeId": "bd2b61df-fa25-4b35-9402-b93732ae599b",
-      "toNodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "toNodeId": "4f7d825b-92d6-4518-b5b4-146ed9d22f19",
       "controlPointPosition": {
-        "x": -563,
-        "y": 117.32486979166666
+        "x": -745,
+        "y": -59.67513020833337
       },
       "condition": {
         "type": 1,
         "parameters": {
           "parameterName": "SittingOnTheChair",
           "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "761c63db-d8d6-404b-8245-e8e17e27ad9a",
+      "fromNodeId": "4f7d825b-92d6-4518-b5b4-146ed9d22f19",
+      "toNodeId": "4f7d825b-92d6-4518-b5b4-146ed9d22f19",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -643,
+        "y": -235.39908854166663
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "QATime",
+          "expectedValue": "true"
+        }
+      }
+    },
+    {
+      "transitionId": "668b4b24-1006-4c14-8a74-c86a3a4ebc33",
+      "fromNodeId": "4f7d825b-92d6-4518-b5b4-146ed9d22f19",
+      "toNodeId": "26fd8f95-fff7-422c-8827-d95a4afcab05",
+      "priority": 0,
+      "mayInterrupt": true,
+      "controlPointPosition": {
+        "x": -549,
+        "y": -88.39908854166663
+      },
+      "condition": {
+        "type": 1,
+        "parameters": {
+          "parameterName": "QATime",
+          "expectedValue": "false"
         }
       }
     }

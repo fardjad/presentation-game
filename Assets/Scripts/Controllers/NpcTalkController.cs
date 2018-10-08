@@ -28,10 +28,12 @@ namespace Controllers
             Blackboard.Parameters["IsRed"] = "false";
             Blackboard.Parameters["TalkToLeft"] = "false";
             Blackboard.Parameters["TalkToRight"] = "false";
+            Blackboard.Parameters["RaiseHand"] = "false";
         }
 
         private void Start()
         {
+            string previousState = "";
             _animator = GetComponent<Animator>();
             StateMachine.OnStateChanged += (sender, args) =>
             {
@@ -41,6 +43,12 @@ namespace Controllers
                 switch (stateName)
                 {
                     case "Idle":
+                        if (previousState == "RaiseHand")
+                        {
+                            ResetAll();
+                            _animator.SetTrigger("ResetSit");
+                        }
+
                         break;
                     case "PlayDistractedAnimation":
                         ResetAll();
@@ -60,7 +68,13 @@ namespace Controllers
                         ResetAll();
                         _animator.SetTrigger("TalkToRight");
                         break;
+                    case "RaiseHand":
+                        ResetAll();
+                        _animator.SetTrigger("RaiseHand");
+                        break;
                 }
+
+                previousState = stateName;
             };
         }
 
@@ -79,6 +93,7 @@ namespace Controllers
             _animator.ResetTrigger("Red1");
             _animator.ResetTrigger("Red2");
             _animator.ResetTrigger("Red3");
+            _animator.ResetTrigger("RaiseHand");
         }
     }
 }

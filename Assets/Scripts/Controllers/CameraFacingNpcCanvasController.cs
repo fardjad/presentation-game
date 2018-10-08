@@ -10,8 +10,7 @@ namespace Controllers
     {
         private Camera _mainCamera;
         private Transform _npcHead;
-        private NpcController _npcController;
-        private IStateMachine _npcControllerStateMachine;
+        private NpcAttentionController _npcAttentionController;
         private Image _attentionBarBg;
 
         public void Start()
@@ -22,29 +21,27 @@ namespace Controllers
             _npcHead = transform.parent.GetComponentsInChildren<Transform>()
                 .FirstOrDefault(t => t.CompareTag("Head"));
 
-            _npcController = transform.parent.GetComponent<NpcController>();
-            _npcControllerStateMachine = _npcController.StateMachine;
+            _npcAttentionController = transform.parent.GetComponent<NpcAttentionController>();
 
             _attentionBarBg = GetComponentInChildren<Image>();
 
-            _npcControllerStateMachine.OnStateChanged += (sender, stateArgs) =>
-            {
-                var state = stateArgs.State;
-                if (state.Name.Equals("SittingOnTheChair"))
-                {
-                    _attentionBarBg.gameObject.SetActive(true);
-                }
-                else if (state.Name.Equals("StandUp"))
-                {
-                    _attentionBarBg.gameObject.SetActive(false);
-                }
-            };
 
             _attentionBarBg.gameObject.SetActive(false);
         }
 
         private void Update()
         {
+            if ((string) _npcAttentionController.Blackboard.Parameters["QATime"] == "true" ||
+                (string) _npcAttentionController.Blackboard.Parameters["SittingOnTheChair"] == "false")
+            {
+                _attentionBarBg.gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                _attentionBarBg.gameObject.SetActive(true);
+            }
+
             transform.LookAt(transform.position + _mainCamera.transform.rotation * Vector3.forward,
                 _mainCamera.transform.rotation * Vector3.up);
 
