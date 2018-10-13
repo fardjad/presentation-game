@@ -1,6 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Utils;
+using Utils.VR;
 using Zenject;
 
 namespace Controllers
@@ -11,25 +13,39 @@ namespace Controllers
 
         [Inject]
         [UsedImplicitly]
-        private void Construct(ZenjectSceneLoader loader)
+        private void Construct(ZenjectSceneLoader loader) 
         {
             _loader = loader;
         }
 
         public void Start()
         {
+            StartCoroutine(VrUtils.SwitchMode(false));
+
             Cursor.lockState = CursorLockMode.None;
         }
 
         public void HandleExit()
         {
             Debug.Log("Exit!");
-            Application.Quit();
+            StartCoroutine(Quit());
         }
+
+        // ReSharper disable once MemberCanBeMadeStatic.Local
+        private IEnumerator Quit()
+        {
+            yield return new WaitForEndOfFrame();
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        } 
 
         public void HandlePlay()
         {
-            _loader.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            _loader.LoadScene(1); // Main
+        }
+
+        public void HandlePlayInVr()
+        {
+            _loader.LoadScene(2); // MainVR
         }
     }
 }

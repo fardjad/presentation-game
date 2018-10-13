@@ -43,7 +43,7 @@ namespace Utils.Input
             Destroy(GameObject.Find("Chairs"));
             _npcManager.Dispose();
 
-            _loader.LoadScene(2);
+            _loader.LoadScene(3);
         }
 
         private void Update()

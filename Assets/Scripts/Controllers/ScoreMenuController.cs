@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utils;
+using Utils.VR;
 using Zenject;
 
 namespace Controllers
@@ -24,6 +25,7 @@ namespace Controllers
         // Use this for initialization
         private void Start()
         {
+            StartCoroutine(VrUtils.SwitchMode(false));
             Cursor.lockState = CursorLockMode.None;
 
             var attentionText = GameObject.Find("AttentionText").GetComponent<Text>();
