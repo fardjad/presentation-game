@@ -1,8 +1,6 @@
 ﻿using JetBrains.Annotations;
 using UniRx;
-using UniRx.Triggers;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace Utils.Input
@@ -31,7 +29,7 @@ namespace Utils.Input
         {
             var escapeObservable = _inputObservableHelper.GetKeyDownObservable(KeyCode.Escape);
 
-            Cursor.lockState = CursorLockMode.Locked;
+            // Cursor.lockState = CursorLockMode.Locked;
 
             escapeObservable
                 .Subscribe(_ => LoadScoreScene());
@@ -48,10 +46,7 @@ namespace Utils.Input
 
         private void Update()
         {
-            if (_scoreManager.Finished)
-            {
-                LoadScoreScene();
-            }
+            if (_scoreManager.Finished) LoadScoreScene();
         }
     }
 }

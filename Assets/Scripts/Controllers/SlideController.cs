@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 using Utils.Input;
+using Utils.VR;
+using Valve.VR;
 using Zenject;
 
 namespace Controllers
@@ -19,18 +22,19 @@ namespace Controllers
 
     public class SlideController : MonoBehaviour
     {
+        private CommunicationManager _communicationManager;
+
+        private List<IDisposable> _disposables;
         private RawImage _image;
         private UpdateInputObservableHelper _inputObservableHelper;
 
-        private List<IDisposable> _disposables;
+        public SteamVR_Input_Sources _InputSources;
+        private NpcManager _npcManager;
 
-        private CommunicationManager _communicationManager;
+        public Canvas StatsCanvas;
 
         public int CurrentSlide { get; private set; }
         public List<SlideInfo> Slides { get; set; }
-
-        public Canvas StatsCanvas;
-        private NpcManager _npcManager;
 
         [Inject]
         [UsedImplicitly]
@@ -57,7 +61,7 @@ namespace Controllers
                     (from pair in slidesDictionary as IDictionary<string, object>
                         orderby int.Parse(pair.Key)
                         select pair.Value as IDictionary<string, object>).ToList())
-                .Select(slidesList => slidesList.Select(slide => new SlideInfo()
+                .Select(slidesList => slidesList.Select(slide => new SlideInfo
                 {
                     Url = string.Format("http://localhost:8080{0}", slide["uri"]),
                     ShouldRaiseHand = (bool) slide["shouldRaiseHand"]
@@ -78,9 +82,27 @@ namespace Controllers
                 .Select(_ => -1)
                 .SkipUntil(slidesObservable);
 
+            var leftGripObservable = this.UpdateAsObservable()
+                .Where(_ => VrUtils.IsInVr)
+                .Select(_ => SteamVR_Input._default.inActions.GrabGrip.GetState(SteamVR_Input_Sources.RightHand))
+                .DistinctUntilChanged()
+                .Where(value => value)
+                .Select(_ => 1)
+                .SkipUntil(slidesObservable);
+
+            var rightGripObservable = this.UpdateAsObservable()
+                .Where(_ => VrUtils.IsInVr)
+                .Select(_ => SteamVR_Input._default.inActions.GrabGrip.GetState(SteamVR_Input_Sources.LeftHand))
+                .DistinctUntilChanged()
+                .Where(value => value)
+                .Select(_ => -1)
+                .SkipUntil(slidesObservable);
+
+
             var clickObservable = slidesObservable
                 .Select(_ => 0)
-                .Merge(leftClickObservable.Merge(rightClickObservable));
+                .Merge(leftClickObservable.Merge(rightClickObservable)).Merge(leftGripObservable)
+                .Merge(rightGripObservable);
 
             var slideNumberObservable = clickObservable.Scan((acc, value) =>
             {
@@ -95,10 +117,7 @@ namespace Controllers
                 .SelectMany(slideNumber => ObservableWWW.GetAndGetBytes(Slides[slideNumber].Url))
                 .Subscribe(contents =>
                 {
-                    if (oldTexture != null)
-                    {
-                        DestroyImmediate(oldTexture);
-                    }
+                    if (oldTexture != null) DestroyImmediate(oldTexture);
 
                     var texture = new Texture2D(1, 1);
                     texture.LoadImage(contents);
@@ -108,13 +127,9 @@ namespace Controllers
                     if (!timeController.TimerStarted) return;
 
                     if (Slides[CurrentSlide].ShouldRaiseHand)
-                    {
                         _npcManager.RandomlyRaiseHand();
-                    }
                     else
-                    {
                         _npcManager.PutAllHandsDown();
-                    }
                 });
 
             _disposables.Add(slideNumberChangerDisposable);
@@ -122,10 +137,7 @@ namespace Controllers
 
         private void Update()
         {
-            if (_image.texture != null)
-            {
-                _image.SizeToParent();
-            }
+            if (_image.texture != null) _image.SizeToParent();
         }
 
         private void OnDestroy()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
@@ -16,16 +15,16 @@ namespace Controllers
 {
     public class NpcAttentionController : MonoBehaviour
     {
-        private Image _image;
-        public StateMachine StateMachine { get; private set; }
-        public IBlackboard Blackboard { get; private set; }
-        private NpcController _npcController;
-        private NpcTalkController _npcTalkController;
         private Animator _animator;
+        private CommunicationManager _communicationManager;
         private ISubject<string> _currentStateSubject;
         private IDisposable _currentStateSubjectDisposable;
-        private CommunicationManager _communicationManager;
+        private Image _image;
+        private NpcController _npcController;
+        private NpcTalkController _npcTalkController;
         private IDisposable _qaDisposable;
+        public StateMachine StateMachine { get; private set; }
+        public IBlackboard Blackboard { get; private set; }
 
         private void Awake()
         {
@@ -62,10 +61,7 @@ namespace Controllers
                 .Subscribe(qaTime =>
                 {
                     Blackboard.Parameters["QATime"] = qaTime ? "true" : "false";
-                    if (qaTime)
-                    {
-                        Blackboard.Parameters["Attention"] = 1f;
-                    }
+                    if (qaTime) Blackboard.Parameters["Attention"] = 1f;
                 });
 
             _currentStateSubject = new Subject<string>();
@@ -111,11 +107,9 @@ namespace Controllers
             StateMachine.Tick(TimeSpan.FromSeconds(Time.deltaTime));
 
             if (_image == null)
-            {
                 _image = GetComponentsInChildren
                         <Image>()
                     .FirstOrDefault(image => image.gameObject.CompareTag("AttentionBar"));
-            }
 
             // ReSharper disable once SwitchStatementMissingSomeCases
             switch (StateMachine.CurrentState.Name)
@@ -127,7 +121,7 @@ namespace Controllers
                 case "DecreaseAttention":
                 {
                     Blackboard.Parameters["Attention"] =
-                        Mathf.Clamp((float) Blackboard.Parameters["Attention"] - 0.01f, 0f, 1f);
+                        Mathf.Clamp((float) Blackboard.Parameters["Attention"] - 0.003f, 0f, 1f);
                     break;
                 }
                 case "Green":

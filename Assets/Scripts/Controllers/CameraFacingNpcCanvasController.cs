@@ -2,16 +2,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
-using Utils.StateMachine;
 
 namespace Controllers
 {
     public class CameraFacingNpcCanvasController : MonoBehaviour
     {
-        private Camera _mainCamera;
-        private Transform _npcHead;
-        private NpcAttentionController _npcAttentionController;
         private Image _attentionBarBg;
+        private Camera _mainCamera;
+        private NpcAttentionController _npcAttentionController;
+        private Transform _npcHead;
 
         public void Start()
         {
@@ -37,10 +36,8 @@ namespace Controllers
                 _attentionBarBg.gameObject.SetActive(false);
                 return;
             }
-            else
-            {
-                _attentionBarBg.gameObject.SetActive(true);
-            }
+
+            _attentionBarBg.gameObject.SetActive(true);
 
             transform.LookAt(transform.position + _mainCamera.transform.rotation * Vector3.forward,
                 _mainCamera.transform.rotation * Vector3.up);

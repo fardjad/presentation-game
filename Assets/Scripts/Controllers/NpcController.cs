@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
-using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
 using Utils;
@@ -32,7 +30,6 @@ namespace Controllers
         private NavMeshAgent _navMeshAgent;
         private float _origGroundCheckDistance;
         private Rigidbody _rigidbody;
-        public IStateMachine StateMachine { get; private set; }
         private float _turnAmount;
         [SerializeField] public List<string> AnimationsStatesWithRootMotion = new List<string>();
         [SerializeField] public float AnimSpeedMultiplier = 1f;
@@ -47,6 +44,7 @@ namespace Controllers
         //specific to the character in sample assets, will need to be modified to work with others
         [SerializeField] public float RunCycleLegOffset = 0.2f;
         [SerializeField] public float StationaryTurnSpeed = 180;
+        public IStateMachine StateMachine { get; private set; }
         public IBlackboard Blackboard { get; private set; }
 
         private void Awake()

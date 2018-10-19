@@ -2181,7 +2181,7 @@ MonoBehaviour:
   GravityMultiplier: 2
   GroundCheckDistance: 0.2
   JumpPower: 12
-  MoveSpeedMultiplier: 1
+  MoveSpeedMultiplier: 0.5
   MovingTurnSpeed: 360
   RunCycleLegOffset: 0.2
   StationaryTurnSpeed: 180

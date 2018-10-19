@@ -6,9 +6,12 @@ namespace Utils.VR
 {
     public static class VrUtils
     {
-        
+        public static bool IsInVr;
+
         public static IEnumerator SwitchMode(bool vr)
         {
+            IsInVr = vr;
+
             var deviceName = vr ? "OpenVR" : "None";
 
             if (string.Compare(XRSettings.loadedDeviceName, deviceName, StringComparison.OrdinalIgnoreCase) != 0)
@@ -18,7 +21,7 @@ namespace Utils.VR
             }
 
             XRSettings.enabled = vr;
-            XRSettings.showDeviceView = !vr;
+            // XRSettings.showDeviceView = !vr;
         }
     }
 }

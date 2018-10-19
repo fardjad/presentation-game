@@ -30,9 +30,7 @@ namespace Utils.Input
 
         public IObservable<Hw> GetHwObservable()
         {
-            return Observable.CombineLatest(
-                GetHorizontalObservable(),
-                GetVerticalObservable(),
+            return GetHorizontalObservable().CombineLatest(GetVerticalObservable(),
                 (horizontal, vertical) => new Hw
                 {
                     Horizontal = horizontal,
@@ -62,9 +60,7 @@ namespace Utils.Input
 
         public IObservable<MouseXy> GetMouseXyObservable()
         {
-            return Observable.CombineLatest(
-                GetMouseXObservable(),
-                GetMouseYObservable(),
+            return GetMouseXObservable().CombineLatest(GetMouseYObservable(),
                 (mouseX, mouseY) => new MouseXy
                 {
                     MouseX = mouseX,

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using JetBrains.Annotations;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
@@ -16,26 +14,26 @@ namespace Controllers
 {
     public class StatsCanvasController : MonoBehaviour
     {
-        private TimeSpan _remainingTime;
-        private TextMeshProUGUI _timeTextMeshPro;
-        private TextMeshProUGUI _slideScoreTextMeshPro;
-        private NpcManager _npcManager;
-        private IDisposable _timerDisposable;
-        public bool TimerStarted { get; private set; }
+        private float _attentionSum;
         private ChairManager _chairManager;
-        private SlideController _slideController;
-        private IDictionary<int, TimeSpan> _slideTime;
-        private float _attentionSum = 0f;
+        private CommunicationManager _communicationManager;
+        private IDisposable _currentSlideDisposable;
         private TimeSpan _elapsedTime;
+        private NpcManager _npcManager;
+        private IDisposable _qaDisposable;
+        private TimeSpan _qaSeconds = TimeSpan.Zero;
+        private bool _qaTime;
+        private TimeSpan _remainingTime;
+        private ScoreManager _scoreManager;
+        private SlideController _slideController;
+        private TextMeshProUGUI _slideScoreTextMeshPro;
+        private bool _slidesLoaded;
+        private IDictionary<int, TimeSpan> _slideTime;
+        private IDisposable _timerDisposable;
+        private TextMeshProUGUI _timeTextMeshPro;
 
         [SerializeField] public RawImage SlideImage;
-        private ScoreManager _scoreManager;
-        private CommunicationManager _communicationManager;
-        private bool _slidesLoaded;
-        private IDisposable _currentSlideDisposable;
-        private IDisposable _qaDisposable;
-        private bool _qaTime;
-        private TimeSpan _qaSeconds = TimeSpan.Zero;
+        public bool TimerStarted { get; private set; }
 
         [UsedImplicitly]
         [Inject]
@@ -96,10 +94,7 @@ namespace Controllers
 
         public void InitializeSlidesTime()
         {
-            for (var i = 0; i < _slideController.Slides.Count; i += 1)
-            {
-                _slideTime[i] = TimeSpan.Zero;
-            }
+            for (var i = 0; i < _slideController.Slides.Count; i += 1) _slideTime[i] = TimeSpan.Zero;
 
             _slidesLoaded = true;
         }
@@ -134,15 +129,11 @@ namespace Controllers
                     _communicationManager.SendJson(new {type = "elapsedTime", value = _elapsedTime.TotalSeconds});
 
                     if (!_qaTime)
-                    {
                         _scoreManager.AverageAttention = _attentionSum /
                                                          _npcManager.NpcControllerDictionary.Count /
                                                          (_elapsedTime.TotalSeconds - _qaSeconds.TotalSeconds);
-                    }
                     else
-                    {
                         _qaSeconds += ti.Interval;
-                    }
 
                     _communicationManager.SendJson(new
                     {
@@ -171,16 +162,10 @@ namespace Controllers
                 .ForEach(controller =>
                 {
                     var stateMachine = controller.StateMachine;
-                    if (!stateMachine.CurrentState.Name.Equals("SittingOnTheChair"))
-                    {
-                        allSeated = false;
-                    }
+                    if (!stateMachine.CurrentState.Name.Equals("SittingOnTheChair")) allSeated = false;
                 });
 
-            if (allSeated && _slidesLoaded && !TimerStarted)
-            {
-                StartTimer();
-            }
+            if (allSeated && _slidesLoaded && !TimerStarted) StartTimer();
         }
 
         private void OnDestroy()

@@ -77,7 +77,7 @@ namespace Controllers
             {
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
-                return obj.GetType() == this.GetType() && Equals((RowCol) obj);
+                return obj.GetType() == GetType() && Equals((RowCol) obj);
             }
 
             public override int GetHashCode()

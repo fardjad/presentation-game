@@ -12,10 +12,9 @@ namespace Controllers
 {
     public class FirstPersonController : MonoBehaviour
     {
+        private List<IDisposable> _disposables;
         private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float Speed = 0.5f;
-
-        private List<IDisposable> _disposables;
 
         [Inject]
         [UsedImplicitly]
@@ -32,9 +31,7 @@ namespace Controllers
             var hwObservable = _inputObservableHelper.GetHwObservable();
 
             var characterController = GetComponentInChildren<CharacterController>();
-            var moveDisposable = Observable.CombineLatest(
-                    speedObservable,
-                    hwObservable,
+            var moveDisposable = speedObservable.CombineLatest(hwObservable,
                     (speed, hw) => new
                     {
                         speed,
@@ -48,9 +45,7 @@ namespace Controllers
             _disposables.Add(moveDisposable);
 
             var animator = GetComponentInChildren<Animator>();
-            var animatorDisposable = Observable.CombineLatest(
-                    speedObservable,
-                    hwObservable,
+            var animatorDisposable = speedObservable.CombineLatest(hwObservable,
                     (speed, hw) => new
                     {
                         speed,

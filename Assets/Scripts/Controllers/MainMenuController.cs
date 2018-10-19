@@ -1,9 +1,10 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using JetBrains.Annotations;
 using UnityEngine;
-using Utils;
 using Utils.VR;
 using Zenject;
+using Debug = UnityEngine.Debug;
 
 namespace Controllers
 {
@@ -13,7 +14,7 @@ namespace Controllers
 
         [Inject]
         [UsedImplicitly]
-        private void Construct(ZenjectSceneLoader loader) 
+        private void Construct(ZenjectSceneLoader loader)
         {
             _loader = loader;
         }
@@ -35,8 +36,8 @@ namespace Controllers
         private IEnumerator Quit()
         {
             yield return new WaitForEndOfFrame();
-            System.Diagnostics.Process.GetCurrentProcess().Kill();
-        } 
+            Process.GetCurrentProcess().Kill();
+        }
 
         public void HandlePlay()
         {

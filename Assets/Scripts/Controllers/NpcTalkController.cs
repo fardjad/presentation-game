@@ -33,7 +33,7 @@ namespace Controllers
 
         private void Start()
         {
-            string previousState = "";
+            var previousState = "";
             _animator = GetComponent<Animator>();
             StateMachine.OnStateChanged += (sender, args) =>
             {

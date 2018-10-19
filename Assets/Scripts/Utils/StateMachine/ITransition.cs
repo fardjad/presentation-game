@@ -4,7 +4,7 @@ namespace Utils.StateMachine
 {
     public interface ITransition
     {
-        int Priority { get;  }
+        int Priority { get; }
         bool MayInterrupt { get; }
         ICondition Condition { get; }
         IState To { get; }

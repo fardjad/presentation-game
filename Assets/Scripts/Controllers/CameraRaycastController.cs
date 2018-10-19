@@ -7,8 +7,8 @@ namespace Controllers
     public class CameraRaycastController : MonoBehaviour
     {
         private Camera _camera;
-        private Subject<string> _logger;
         private NpcAttentionController _currentNpcAttentionController;
+        private Subject<string> _logger;
 
         private void Start()
         {
@@ -29,9 +29,7 @@ namespace Controllers
                 var npcController = headColliderController.Npc;
                 var npcAttentionController = npcController.GetComponent<NpcAttentionController>();
                 if (_currentNpcAttentionController != null && _currentNpcAttentionController != npcAttentionController)
-                {
                     _currentNpcAttentionController.Blackboard.Parameters["PlayerIsLookingAtNpc"] = "false";
-                }
 
                 _currentNpcAttentionController = npcAttentionController;
                 npcAttentionController.Blackboard.Parameters["PlayerIsLookingAtNpc"] = "true";
@@ -39,9 +37,7 @@ namespace Controllers
             else
             {
                 if (_currentNpcAttentionController != null)
-                {
                     _currentNpcAttentionController.Blackboard.Parameters["PlayerIsLookingAtNpc"] = "false";
-                }
 
                 _currentNpcAttentionController = null;
             }

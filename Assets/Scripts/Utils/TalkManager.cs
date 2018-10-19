@@ -10,18 +10,10 @@ namespace Utils
 {
     public class TalkManager : ITickable
     {
-        private NpcManager _npcManager;
         private ChairManager _chairManager;
 
-        private float _elapsedTime = 0;
-
-        [UsedImplicitly]
-        [Inject]
-        private void Construct(NpcManager npcManager, ChairManager chairManager)
-        {
-            _chairManager = chairManager;
-            _npcManager = npcManager;
-        }
+        private float _elapsedTime;
+        private NpcManager _npcManager;
 
         public void Tick()
         {
@@ -83,6 +75,14 @@ namespace Utils
             }
         }
 
+        [UsedImplicitly]
+        [Inject]
+        private void Construct(NpcManager npcManager, ChairManager chairManager)
+        {
+            _chairManager = chairManager;
+            _npcManager = npcManager;
+        }
+
         private static bool CanTalk(NpcController npc1, NpcController npc2)
         {
             var sm1 = npc1.StateMachine;
@@ -94,8 +94,7 @@ namespace Utils
                 .Blackboard.Parameters["Attention"];
 
             return sm1.CurrentState.Name.Equals("SittingOnTheChair") &&
-                   sm2.CurrentState.Name.Equals("SittingOnTheChair") &&
-                   (attention1 < 0.2f && attention2 < 0.2f);
+                   sm2.CurrentState.Name.Equals("SittingOnTheChair") && attention1 < 0.2f && attention2 < 0.2f;
         }
     }
 }

@@ -12,11 +12,10 @@ namespace Controllers
 {
     public class CameraLookController : MonoBehaviour
     {
+        private List<IDisposable> _disposables;
         private InputObservableHelper _inputObservableHelper;
         [SerializeField] public float Sensitivity = 2f;
         [SerializeField] public float Smoothing = 2f;
-
-        private List<IDisposable> _disposables;
 
         [Inject]
         [UsedImplicitly]
@@ -33,16 +32,12 @@ namespace Controllers
             var smoothingObservable = this.UpdateAsObservable().Select(_ => Smoothing).DistinctUntilChanged();
             var characterControllerObservable = Observable.Return(GetComponentInParent<CharacterController>());
             var mouseXyObservable = _inputObservableHelper.GetMouseXyObservable();
-            var mouseDeltaObservable = Observable.CombineLatest(
-                sensitivityObservable,
-                smoothingObservable,
+            var mouseDeltaObservable = sensitivityObservable.CombineLatest(smoothingObservable,
                 mouseXyObservable,
                 (sensitivity, smoothing, mouseXy) =>
                     new Vector3(mouseXy.MouseX, mouseXy.MouseY) * sensitivity * smoothing
             );
-            var mouseDeltaAndSmoothingObservable = Observable.CombineLatest(
-                mouseDeltaObservable,
-                smoothingObservable,
+            var mouseDeltaAndSmoothingObservable = mouseDeltaObservable.CombineLatest(smoothingObservable,
                 (mouseDelta, smoothing) => new {mouseDelta, smoothing}
             );
             var smoothMouseDeltaObservable = mouseDeltaAndSmoothingObservable.Scan((acc, mouseDeltaAndSmoothing) =>
@@ -68,8 +63,8 @@ namespace Controllers
                 return new Vector3(result.x, Mathf.Clamp(result.y, -50 /* down */, 70 /* up */));
             });
 
-            var characterControllerRotationDisposable = Observable.CombineLatest(
-                    characterControllerObservable.Select(characterController => characterController.transform.up),
+            var characterControllerRotationDisposable = characterControllerObservable
+                .Select(characterController => characterController.transform.up).CombineLatest(
                     mouseLookObservable.Select(mouseLook => mouseLook.x),
                     (up, mouseLookX) =>
                         Quaternion.AngleAxis(mouseLookX, up)

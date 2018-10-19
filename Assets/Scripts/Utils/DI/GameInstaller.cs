@@ -1,4 +1,3 @@
-using System;
 using Controllers;
 using UniRx.Triggers;
 using UnityEngine;
@@ -12,8 +11,8 @@ namespace Utils.DI
     {
         public GameObject ChairPrefab;
         public ChairSpawnController.Settings ChairSpawnControllerSettings;
-        public GameObject NpcPrefab;
         public GameObject HeadColliderHolderPrefab;
+        public GameObject NpcPrefab;
 
         public override void InstallBindings()
         {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.Collections.Generic;
 using Controllers;
 using JetBrains.Annotations;
 using UniRx;
@@ -35,13 +31,9 @@ namespace Utils
         {
             var ret = new List<Tuple<int, int>>();
             for (var i = 0; i < _chairSpawnControllerSettings.CountX; i += 1)
-            {
-                for (var j = 0; j < _chairSpawnControllerSettings.CountZ; j += 1)
-                {
-                    if (!_chairSpawnControllerSettings.DisabledChairs.Contains(new ChairSpawnController.RowCol(i, j)))
-                        ret.Add(new Tuple<int, int>(i, j));
-                }
-            }
+            for (var j = 0; j < _chairSpawnControllerSettings.CountZ; j += 1)
+                if (!_chairSpawnControllerSettings.DisabledChairs.Contains(new ChairSpawnController.RowCol(i, j)))
+                    ret.Add(new Tuple<int, int>(i, j));
 
             return ret;
         }
@@ -65,10 +57,7 @@ namespace Utils
                 var row = rowCol.Row;
                 var col = rowCol.Col;
 
-                if (row < GetNumberOfRows() && col < GetNumberOfCols())
-                {
-                    c -= 1;
-                }
+                if (row < GetNumberOfRows() && col < GetNumberOfCols()) c -= 1;
             });
             return c;
         }

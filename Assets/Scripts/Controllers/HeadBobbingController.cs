@@ -63,9 +63,7 @@ namespace Controllers
                 .Select(hw => Mathf.Abs(hw.Horizontal) + Mathf.Abs(hw.Vertical))
                 .Select(sumOfAxes => Mathf.Clamp(sumOfAxes, 0f, 1f));
 
-            var positionDisposable = Observable.CombineLatest(
-                    translateChangeObservable,
-                    clampedSumOfAxesObservable,
+            var positionDisposable = translateChangeObservable.CombineLatest(clampedSumOfAxesObservable,
                     initialLocalPositionObservable,
                     (translateChange, clampedSumOfAxes, initialLocalPosition) =>
                         new Vector3(0, translateChange * clampedSumOfAxes, 0) + initialLocalPosition

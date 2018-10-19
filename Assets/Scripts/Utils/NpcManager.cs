@@ -12,12 +12,11 @@ namespace Utils
     public class NpcManager : IDisposable
     {
         private readonly ChairManager _chairManager;
+        private readonly ChairSpawnController.Settings _chairSpawnControllerSettings;
         private readonly IDictionary<string, Tuple<int, int>> _npcChairDictionary;
-        public IDictionary<string, NpcController> NpcControllerDictionary { get; private set; }
 
         private int _col = -1;
-        private int _row = 0;
-        private readonly ChairSpawnController.Settings _chairSpawnControllerSettings;
+        private int _row;
 
         public NpcManager(ChairManager chairManager, ChairSpawnController.Settings chairSpawnControllerSettings)
         {
@@ -25,6 +24,14 @@ namespace Utils
             _chairManager = chairManager;
             NpcControllerDictionary = new Dictionary<string, NpcController>();
             _npcChairDictionary = new Dictionary<string, Tuple<int, int>>();
+        }
+
+        public IDictionary<string, NpcController> NpcControllerDictionary { get; private set; }
+
+        public void Dispose()
+        {
+            _npcChairDictionary.Clear();
+            NpcControllerDictionary.Clear();
         }
 
         public void RegisterNpcController(string id, NpcController npcController)
@@ -75,10 +82,7 @@ namespace Utils
                 _row += 1;
             }
 
-            if (_row == _chairManager.GetNumberOfRows())
-            {
-                _row = 0;
-            }
+            if (_row == _chairManager.GetNumberOfRows()) _row = 0;
         }
 
         public void RandomlyRaiseHand()
@@ -99,12 +103,6 @@ namespace Utils
                 .ToList()
                 .ForEach(
                     blackboard => { blackboard.Parameters["RaiseHand"] = "false"; });
-        }
-
-        public void Dispose()
-        {
-            _npcChairDictionary.Clear();
-            NpcControllerDictionary.Clear();
         }
     }
 }

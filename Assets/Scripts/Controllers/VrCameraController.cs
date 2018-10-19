@@ -10,10 +10,10 @@ namespace Controllers
 {
     public class VrCameraController : MonoBehaviour
     {
-        private UpdateInputObservableHelper _inputObservableHelper;
-        public float Speed = 0.5f;
         private IDisposable _inputHDisposable;
+        private UpdateInputObservableHelper _inputObservableHelper;
         private IDisposable _inputVDisposable;
+        public float Speed = 0.5f;
 
         [Inject]
         [UsedImplicitly]

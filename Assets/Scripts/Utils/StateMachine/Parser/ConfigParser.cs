@@ -29,8 +29,11 @@ namespace Utils.StateMachine.Parser
                 var transitionDictionary = (Dictionary<string, object>) transitionObject;
                 var fromNodeId = (string) transitionDictionary["fromNodeId"];
                 var toNodeId = (string) transitionDictionary["toNodeId"];
-                var priority = transitionDictionary.ContainsKey("priority") ? int.Parse(transitionDictionary["priority"].ToString()) : 0;
-                var mayInterrupt = transitionDictionary.ContainsKey("mayInterrupt") && (bool) transitionDictionary["mayInterrupt"];
+                var priority = transitionDictionary.ContainsKey("priority")
+                    ? int.Parse(transitionDictionary["priority"].ToString())
+                    : 0;
+                var mayInterrupt = transitionDictionary.ContainsKey("mayInterrupt") &&
+                                   (bool) transitionDictionary["mayInterrupt"];
 
                 var conditionDictionary = (Dictionary<string, object>) transitionDictionary["condition"];
                 var conditionType = int.Parse(conditionDictionary["type"].ToString());

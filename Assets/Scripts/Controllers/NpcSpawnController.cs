@@ -11,12 +11,12 @@ namespace Controllers
 {
     public class NpcSpawnController : MonoBehaviour
     {
-        private NpcController.Factory _npcControllerFactory;
-        private NpcManager _npcManager;
-        private HeadColliderController.Factory _headColliderControllerFactory;
+        private ChairManager _chairManager;
 
         private List<IDisposable> _disposables;
-        private ChairManager _chairManager;
+        private HeadColliderController.Factory _headColliderControllerFactory;
+        private NpcController.Factory _npcControllerFactory;
+        private NpcManager _npcManager;
 
         [Inject]
         [UsedImplicitly]
