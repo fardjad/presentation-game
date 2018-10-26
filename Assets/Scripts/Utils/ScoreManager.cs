@@ -10,6 +10,7 @@ namespace Utils
         public readonly IDictionary<int, TimeSpan> SlideTime;
         public double AverageAttention;
         public bool Finished = false;
+        public int CurrentSlide = 0;
 
         public ScoreManager()
         {

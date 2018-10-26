@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
+using UnityEngine.AI;
 using Utils;
 using Zenject;
 
@@ -51,7 +52,10 @@ namespace Controllers
                 {
                     var chairController = _chairControllerFactory.Create();
                     chairController.gameObject.transform.position = data.Position;
+                    
                     chairController.gameObject.name = data.Name;
+                    chairController.gameObject.GetComponentInChildren<NavMeshObstacle>().transform.name = data.Name;
+                    
                     _chairManager.RegisterChairController(data.Ix, data.Iz, chairController);
                 });
         }

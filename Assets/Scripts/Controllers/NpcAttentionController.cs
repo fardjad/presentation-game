@@ -99,6 +99,11 @@ namespace Controllers
                 });
         }
 
+        private static bool ShouldDecreaseAttention()
+        {
+            return new Random().Next(0, 9) > 1;
+        }
+
         // Update is called once per frame
         private void Update()
         {
@@ -121,7 +126,7 @@ namespace Controllers
                 case "DecreaseAttention":
                 {
                     Blackboard.Parameters["Attention"] =
-                        Mathf.Clamp((float) Blackboard.Parameters["Attention"] - 0.003f, 0f, 1f);
+                        Mathf.Clamp((float) Blackboard.Parameters["Attention"] - (ShouldDecreaseAttention() ? 0.003f : 0f), 0f, 1f);
                     break;
                 }
                 case "Green":

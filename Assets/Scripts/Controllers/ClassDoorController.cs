@@ -29,7 +29,10 @@ namespace Controllers
                 .Delay(TimeSpan.FromSeconds(1))
                 .CombineLatest(pendingOpenRequestsObservable, (_, pendingOpenRequests) => pendingOpenRequests)
                 .Where(pendingOpenRequests => pendingOpenRequests == 0)
-                .Subscribe(_ => { animator.SetBool("IsOpen", false); });
+                .Subscribe(_ =>
+                {
+                    if (animator != null) animator.SetBool("IsOpen", false);
+                });
         }
     }
 }

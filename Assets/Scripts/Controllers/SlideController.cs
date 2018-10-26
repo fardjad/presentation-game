@@ -32,6 +32,7 @@ namespace Controllers
         private NpcManager _npcManager;
 
         public Canvas StatsCanvas;
+        private ScoreManager _scoreManager;
 
         public int CurrentSlide { get; private set; }
         public List<SlideInfo> Slides { get; set; }
@@ -40,11 +41,13 @@ namespace Controllers
         [UsedImplicitly]
         private void Construct(UpdateInputObservableHelper inputObservableHelper,
             NpcManager npcManager,
-            CommunicationManager communicationManager)
+            CommunicationManager communicationManager,
+            ScoreManager scoreManager)
         {
             _inputObservableHelper = inputObservableHelper;
             _communicationManager = communicationManager;
             _npcManager = npcManager;
+            _scoreManager = scoreManager;
         }
 
         private void Start()
@@ -72,6 +75,7 @@ namespace Controllers
             {
                 Slides = slides.ToList();
                 timeController.InitializeSlidesTime();
+                _communicationManager.SendJson((new {type = "start"}));
             });
 
             var leftClickObservable = _inputObservableHelper.GetMouseDownObservable(0)
@@ -113,6 +117,7 @@ namespace Controllers
 
             var slideNumberChangerDisposable = slideNumberObservable
                 .Do(slideNumber => CurrentSlide = slideNumber)
+                .Do(slideNumber => _scoreManager.CurrentSlide = slideNumber)
                 .Do(slideNumber => _communicationManager.SendJson(new {type = "slideIndex", value = slideNumber}))
                 .SelectMany(slideNumber => ObservableWWW.GetAndGetBytes(Slides[slideNumber].Url))
                 .Subscribe(contents =>

@@ -4,7 +4,10 @@ using System.Linq;
 using Controllers;
 using JetBrains.Annotations;
 using UniRx;
+using UniRx.Triggers;
+using UnityEngine;
 using Utils.StateMachine.Blackboard;
+using Random = System.Random;
 
 namespace Utils
 {
@@ -88,12 +91,16 @@ namespace Utils
         public void RandomlyRaiseHand()
         {
             PutAllHandsDown();
+
             var controllers = (from pair in NpcControllerDictionary select pair.Value).ToList();
             var rand = new Random();
             var toSkip = rand.Next(0, NpcControllerDictionary.Count);
             var randomNpcController = controllers.Skip(toSkip).Take(1).First();
             var npcTalkController = randomNpcController.gameObject.GetComponent<NpcTalkController>();
-            npcTalkController.Blackboard.Parameters["RaiseHand"] = "true";
+            npcTalkController.UpdateAsObservable().Take(1).Delay(TimeSpan.FromSeconds(1)).Subscribe(_ =>
+            {
+                npcTalkController.Blackboard.Parameters["RaiseHand"] = "true";
+            });
         }
 
         public void PutAllHandsDown()

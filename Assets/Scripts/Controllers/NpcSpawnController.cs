@@ -17,6 +17,7 @@ namespace Controllers
         private HeadColliderController.Factory _headColliderControllerFactory;
         private NpcController.Factory _npcControllerFactory;
         private NpcManager _npcManager;
+        private int _npcId = 0;
 
         [Inject]
         [UsedImplicitly]
@@ -46,7 +47,7 @@ namespace Controllers
 
                     npcController.gameObject.transform.position = transform.position;
 
-                    var id = Guid.NewGuid().ToString();
+                    var id = (_npcId++).ToString();
 
                     npcController.name = string.Format("NPC {0}", id);
                     headColliderController.name = string.Format("HeadColliderHolder {0}", id);

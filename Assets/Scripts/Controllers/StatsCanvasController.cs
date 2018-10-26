@@ -63,7 +63,7 @@ namespace Controllers
 
             _slideController = SlideImage.GetComponent<SlideController>();
 
-            _remainingTime = TimeSpan.FromMinutes(20);
+            _remainingTime = TimeSpan.FromMinutes(10);
             _elapsedTime = TimeSpan.Zero;
 
             _scoreManager.Finished = false;
