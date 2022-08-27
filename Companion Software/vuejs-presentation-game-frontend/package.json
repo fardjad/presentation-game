@@ -1,0 +1,37 @@
+{
+  "name": "presentation-game-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.4",
+    "@fortawesome/free-solid-svg-icons": "^5.3.1",
+    "@fortawesome/vue-fontawesome": "^0.1.1",
+    "axios": "^0.18.0",
+    "buefy": "^0.6.7",
+    "reconnecting-websocket": "^4.0.0-rc5",
+    "vue": "^2.5.17",
+    "vue-class-component": "^6.0.0",
+    "vue-property-decorator": "^7.0.0",
+    "vue-router": "^3.0.1",
+    "vue-uniq-ids": "^1.0.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-typescript": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "node-sass": "^4.9.3",
+    "prettier": "^1.14.2",
+    "sass-loader": "^7.1.0",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.0.0",
+    "vue-cli-plugin-buefy": "^0.3.1",
+    "vue-template-compiler": "^2.5.17",
+    "vue-tsx-support": "^2.1.1"
+  }
+}

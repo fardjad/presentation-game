@@ -1,0 +1,13 @@
+{
+  "name": "presentation-game-servers-runner",
+  "version": "1.0.0",
+  "description": "Concurrently runs the back-end and front-end servers",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Fardjad Davari <public@fardjad.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

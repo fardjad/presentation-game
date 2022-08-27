@@ -1,0 +1,373 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Presentation Game",
+    "description": "Presentation Game Back-end API Specification",
+    "contact": {
+      "name": "Fardjad Davari",
+      "url": "https://www.fardjad.com",
+      "email": "public@fardjad.com"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "3.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Development Server"
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {
+        "summary": "Get Server Status",
+        "responses": {
+          "200": {
+            "description": "Server is up and running in a healthy state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "There's something wrong with the server."
+          }
+        }
+      }
+    },
+    "/state": {
+      "get": {
+        "summary": "Get current state",
+        "responses": {
+          "200": {
+            "description": "Returns current application state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/state/elapsedtime": {
+      "get": {
+        "summary": "Get elapsedTime",
+        "responses": {
+          "200": {
+            "description": "Returns elapsed time.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set elapsedTime",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetElapsedTimeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Elapsed time has been set successfully."
+          }
+        }
+      }
+    },
+    "/state/slidenumber": {
+      "get": {
+        "summary": "Get slide number",
+        "responses": {
+          "200": {
+            "description": "Returns current slide number.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set slide number",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetSlideNumberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Current slide has been set successfully."
+          }
+        }
+      }
+    },
+    "/state/slides": {
+      "get": {
+        "summary": "Get slides",
+        "responses": {
+          "200": {
+            "description": "Returns slides defined in application state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Slides"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/state/slides/{slideIndex}/{keyword}": {
+      "put": {
+        "summary": "Set the specified keyword state for a certain slide",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetKeywordValueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Keyword state has been set successfully."
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "slideIndex",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "keyword",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/state/slides/{slideIndex}/likertscalequestions/{questionIndex}/": {
+      "put": {
+        "summary": "Set the value for the specified likert-scale question",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetLikertScaleQuestionValueRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Specified likert-scale questions's value has been set successfully."
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "slideIndex",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "questionIndex",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "number"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "StatusResponse": {
+        "title": "Root Type for StatusResponse",
+        "description": "The root of the StatusResponse type's schema.",
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "StateResponse": {
+        "title": "Root Type for StateResponse",
+        "description": "The root of the StateResponse type's schema.",
+        "required": [
+          "slides"
+        ],
+        "type": "object",
+        "properties": {
+          "elapsedTime": {
+            "type": "number"
+          },
+          "slideNumber": {
+            "type": "number"
+          },
+          "slides": {
+            "$ref": "#/components/schemas/Slides"
+          }
+        }
+      },
+      "Slide": {
+        "title": "Root Type for Slide",
+        "description": "The root of the Slide type's schema.",
+        "required": [
+          "keywords",
+          "index",
+          "likertScaleQuestions"
+        ],
+        "type": "object",
+        "properties": {
+          "index": {
+            "description": "Slide index",
+            "type": "number"
+          },
+          "keywords": {
+            "$ref": "#/components/schemas/KeywordsKV",
+            "description": "Associative array of keywords that player must mention in this slide",
+            "properties": {
+              "something": {
+                "type": "boolean"
+              }
+            }
+          },
+          "likertScaleQuestions": {
+            "$ref": "#/components/schemas/LikertScaleQuestions",
+            "description": "Likert scale questions for this slide"
+          }
+        }
+      },
+      "KeywordsKV": {
+        "title": "Root Type for KeywordsKV",
+        "description": "The root of the KeywordsKV type's schema.",
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "LikertScaleQuestions": {
+        "title": "Root Type for LikertScaleQuestions",
+        "description": "The root of the LikertScaleQuestions type's schema.",
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "text": {
+            "description": "Question text",
+            "type": "string"
+          },
+          "value": {
+            "description": "Conventional score",
+            "type": "number"
+          }
+        }
+      },
+      "Slides": {
+        "title": "Root Type for Slides",
+        "description": "The root of the Slides type's schema.",
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Slide"
+        }
+      },
+      "SetElapsedTimeRequest": {
+        "title": "Root Type for SetElapsedTimeRequest",
+        "description": "The root of the SetElapsedTimeRequest type's schema.",
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "SetSlideNumberRequest": {
+        "title": "Root Type for SetSlideNumberRequest",
+        "description": "The root of the SetSlideNumberRequest type's schema.",
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          }
+        }
+      },
+      "SetKeywordValueRequest": {
+        "title": "Root Type for SetSlideNumberRequest",
+        "description": "The root of the SetSlideNumberRequest type's schema.",
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SetLikertScaleQuestionValueRequest": {
+        "title": "Root Type for SetLikertScaleQuestionValueRequest",
+        "description": "The root of the SetLikertScaleQuestionValueRequest type's schema.",
+        "required": [
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

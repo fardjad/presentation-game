@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the thesis from preferred-citation and the software itself."
+authors:
+  - family-names: "Davari"
+    given-names: "Fardjad"
+    orcid: "https://orcid.org/0000-0002-6393-5765"
+title: "Presentation Game"
+license: "CC-BY-NC-SA-4.0"
+preferred-citation:
+  authors:
+    - family-names: Davari
+      given-names: Fardjad
+      orcid: "https://orcid.org/0000-0002-6393-5765"
+    - family-names: Vahidi-Asl
+      given-names: Mojtaba
+      orcid: "https://orcid.org/0000-0003-4964-992X"
+  title: "An Approach for Measuring the Impact of Virtual Reality Elements on Serious Games Criteria Based on Game Data Analytics"
+  institution:
+    name: Shahid Beheshti University
+  thesis-type: MSc
+  type: thesis
+  year: 2019
+repository-code: "https://github.com/fardjad/presentation-game"

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+    "baseUrl": ".",
+    "types": ["node"],
+    "lib": ["es2017"],
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules/**"],
+  "include": ["**/*.d.ts", "**/*.ts"]
+}
